@@ -85,24 +85,28 @@ const INITIAL_STATE = {
   nextEventId: 1,
 }
 
-export const store = new Vuex.Store({
+const store = new Vuex.Store({
   state: Object.assign({}, INITIAL_STATE),
+
+  getters: {
+    animalsList: state => {
+      return Object.values(state.animals);
+    }
+  },
+
   mutations: {
     load(state) {
       if(ApplicationSettings.getString("store")) {
         this.replaceState(
-            Object.assign(state, JSON.parse(ApplicationSettings.getString("store")))
+          Object.assign(state, JSON.parse(ApplicationSettings.getString("store")))
         );
       }
     },
 
-    save(state, data) {
-      state.firstname = data.firstname;
-      state.lastname = data.lastname;
-    },
-
     reset(state) {
-      state = Object.assign({}, INITIAL_STATE)
+      this.replaceState(
+        Object.assign(state, INITIAL_STATE)
+      );
     },
 
     addAnimal(state, animalData) {
@@ -134,3 +138,5 @@ export const store = new Vuex.Store({
 });
 
 Vue.prototype.$store = store;
+
+export default store;
