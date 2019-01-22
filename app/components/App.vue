@@ -9,10 +9,6 @@
       }
     },
 
-    mounted() {
-      this.$store.commit('load');
-    },
-
     computed: {
       ...mapGetters([
         'animalsList'

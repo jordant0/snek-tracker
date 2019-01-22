@@ -110,29 +110,29 @@ const store = new Vuex.Store({
     },
 
     addAnimal(state, animalData) {
-      state.animals[state.nextAnimalId] = setAnimalData(state.nextAnimalId, animalData);
+      Vue.set(state.animals, state.nextAnimalId, setAnimalData(state.nextAnimalId, animalData));
       state.nextAnimalId += 1;
     },
 
     updateAnimal(state, { id, animalData }) {
-      state.animals[id] = setAnimalData(id, animalData);
+      Vue.set(state.animals, id, setAnimalData(id, animalData));
     },
 
     removeAnimal(state, { id }) {
-      delete state.animals[id];
+      Vue.delete(state.animals, id);
     },
 
     aAddEvent(state, { eventData }) {
-      state.events[state.nextEventId] = setEventData(state.nextEventId, eventData);
+      Vue.set(state.events, state.nextEventId, setEventData(state.nextEventId, eventData));
       state.nextEventId += 1;
     },
 
     updateEvent(state, { id, eventData }) {
-      state.events[id] = setEventData(id, eventData);
+      Vue.set(state.events, id, setEventData(id, eventData));
     },
 
     removeEvent(state, { id }) {
-      delete state.events[id];
+      Vue.delete(state.events, id);
     },
   }
 });

@@ -18,6 +18,10 @@ Vue.registerElement('RadSideDrawer', () => require('nativescript-ui-sidedrawer')
 new Vue({
   store,
 
+  created() {
+    this.$store.commit('load');
+  },
+
   mounted() {
     this.$store.subscribe((mutations, state) => {
       ApplicationSettings.setString("store", JSON.stringify(state));
