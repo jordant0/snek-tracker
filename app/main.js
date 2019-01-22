@@ -1,9 +1,11 @@
 import Vue from 'nativescript-vue'
 import App from './components/App'
 import VueDevtools from 'nativescript-vue-devtools'
-import { store } from './store/index'
-import * as ApplicationSettings from "application-settings";
+import store from './store/index'
+import * as ApplicationSettings from "application-settings"
 import Vuex from 'vuex'
+
+import './app.scss'
 
 Vue.use(Vuex)
 

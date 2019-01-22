@@ -45,7 +45,7 @@
   <Page>
     <ActionBar>
       <GridLayout width="100%" columns="auto, *">
-        <Label text="MENU" @tap="$refs.drawer.nativeView.showDrawer()" col="0"/>
+        <Label class="icon" :text="String.fromCharCode(0xf197)" @tap="$refs.drawer.nativeView.showDrawer()" col="0" />
         <Label class="title" text="Snek Tracker"  col="1"/>
       </GridLayout>
     </ActionBar>
@@ -82,13 +82,6 @@
   .title {
     text-align: left;
     padding-left: 16;
-  }
-
-  .message {
-    vertical-align: center;
-    text-align: center;
-    font-size: 20;
-    color: #333333;
   }
 
   .drawer-header {

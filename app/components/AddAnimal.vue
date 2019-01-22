@@ -40,6 +40,7 @@
   <Page>
     <ActionBar>
       <GridLayout width="100%" columns="auto, *">
+        <Label class="icon" :text="String.fromCharCode(0xf2fa)" @tap="$navigateBack" col="0" />
         <Label class="title" text="Add Animal"  col="1"/>
       </GridLayout>
     </ActionBar>
