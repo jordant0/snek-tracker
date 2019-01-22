@@ -12,11 +12,11 @@ function setAnimalData(id, animalData) {
     species: animalData.species,
   }
 
-  if(animalData.date) {
+  if(animalData.birthdate) {
     newAnimal.birthdate = {
-      day: animalData.date.getDate(),
-      month: animalData.date.getMonth(),
-      year: animalData.date.getYear() + 1900,
+      day: animalData.birthdate.getDate(),
+      month: animalData.birthdate.getMonth(),
+      year: animalData.birthdate.getYear() + 1900,
     }
   }
   else {
@@ -91,7 +91,11 @@ const store = new Vuex.Store({
   getters: {
     animalsList: state => {
       return Object.values(state.animals);
-    }
+    },
+
+    getAnimal: (state) => (id) => {
+      return state.animals[id];
+    },
   },
 
   mutations: {

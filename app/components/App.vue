@@ -1,6 +1,7 @@
 <script>
   import { mapGetters } from 'vuex'
   import AddAnimal from './AddAnimal'
+  import AnimalDetails from './AnimalDetails'
 
   export default {
     data() {
@@ -29,6 +30,12 @@
         }).then(result => {
           this.$store.commit('reset');
         });
+      },
+
+      viewAnimal(event) {
+        if(event.item) {
+          this.$navigateTo(AnimalDetails, {props: {animalId: event.item.id}})
+        }
       }
     },
   }
@@ -51,13 +58,13 @@
         <Label class="drawer-item" text="Reset" @tap="resetData"/>
       </StackLayout>
 
-      <GridLayout ~mainContent columns="*" rows="*">
-        <ListView for="animal in animalsList">
+      <StackLayout ~mainContent columns="*" rows="*">
+        <ListView for="animal in animalsList" @itemTap="viewAnimal">
           <v-template>
-            <Label :text="`${animal.name} (${animal.type})`" />
+            <Label class="list-item" :text="`${animal.name} (${animal.type})`" />
           </v-template>
         </ListView>
-      </GridLayout>
+      </StackLayout>
     </RadSideDrawer>
   </Page>
 </template>
@@ -66,6 +73,10 @@
   ActionBar {
     background-color: #53ba82;
     color: #ffffff;
+  }
+
+  .list-item {
+    padding: 10 20;
   }
 
   .title {
