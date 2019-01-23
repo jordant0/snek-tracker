@@ -45,20 +45,32 @@
       </GridLayout>
     </ActionBar>
 
-    <StackLayout>
-      <Label class="label" text="Name" />
-      <TextField v-model="name" hint="Enter animal's name..." />
+    <FlexboxLayout flexDirection="column" justifyContent="space-between">
+      <ScrollView>
+        <StackLayout>
+          <StackLayout class="form-field" marginBottom="20">
+            <Label class="label" text="Name" />
+            <TextField v-model="name" hint="Enter animal's name..." />
+          </StackLayout>
 
-      <Label class="label" text="Birthdate" />
-      <DatePicker v-model="birthdate" />
+          <StackLayout class="form-field">
+            <Label class="label" text="Birthdate" />
+            <DatePicker v-model="birthdate" />
+          </StackLayout>
 
-      <Label class="label" text="Type" />
-      <ListPicker :items="typesList" v-model="typeIndex" />
+          <StackLayout class="form-field">
+            <Label class="label" text="Type" />
+            <ListPicker :items="typesList" v-model="typeIndex" />
+          </StackLayout>
 
-      <Label class="label" text="Species" />
-      <TextField v-model="species" hint="Enter species name..." />
+          <StackLayout class="form-field" marginBottom="20">
+            <Label class="label" text="Species" />
+            <TextField v-model="species" hint="Enter species name..." />
+          </StackLayout>
+        </StackLayout>
+      </ScrollView>
 
-      <Button text="Add" @tap="addAnimal" />
-    </StackLayout>
+      <Button class="btn btn-primary" text="Add" flexShrink="0" @tap="addAnimal" />
+    </FlexboxLayout>
   </Page>
 </template>

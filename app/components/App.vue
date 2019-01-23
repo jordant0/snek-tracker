@@ -54,14 +54,21 @@
       <StackLayout ~drawerContent backgroundColor="#ffffff">
         <Label class="sidedrawer-header" text="Menu"/>
 
-        <Label class="sidedrawer-list-item" text="Add Animal" @tap="addAnimal"/>
-        <Label class="sidedrawer-list-item" text="Reset" @tap="resetData"/>
+        <StackLayout class="sidedrawer-list-item" orientation="horizontal">
+          <Label class="icon" :text="String.fromCharCode(0xf1ff)" />
+          <Label class="title" text="Add Animal" @tap="addAnimal" />
+        </StackLayout>
+
+        <StackLayout class="sidedrawer-list-item" orientation="horizontal">
+          <Label class="icon text-danger" :text="String.fromCharCode(0xf1f4)" />
+          <Label class="title text-danger" text="Reset" @tap="resetData" />
+        </StackLayout>
       </StackLayout>
 
       <StackLayout ~mainContent columns="*" rows="*">
         <ListView for="animal in animalsList" class="list-group" @itemTap="viewAnimal">
           <v-template>
-            <Label class="list-group-item" :text="`${animal.name} (${animal.type})`" />
+            <Label class="list-group-item list-group-item-heading" :text="`${animal.name} (${animal.type})`" />
           </v-template>
         </ListView>
       </StackLayout>
