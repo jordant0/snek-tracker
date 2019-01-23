@@ -51,21 +51,23 @@
     </ActionBar>
 
     <RadSideDrawer ref="drawer">
-      <StackLayout ~drawerContent backgroundColor="#ffffff">
-        <Label class="sidedrawer-header" text="Menu"/>
+      <FlexboxLayout ~drawerContent class="sidedrawer-content">
+        <StackLayout>
+          <Label class="sidedrawer-header" text="Menu"/>
 
-        <StackLayout class="sidedrawer-list-item" orientation="horizontal">
-          <Label class="icon" :text="String.fromCharCode(0xf1ff)" />
-          <Label class="title" text="Add Animal" @tap="addAnimal" />
+          <StackLayout class="sidedrawer-list-item" orientation="horizontal">
+            <Label class="icon" :text="String.fromCharCode(0xf1ff)" />
+            <Label class="title" text="Add Animal" @tap="addAnimal" />
+          </StackLayout>
         </StackLayout>
 
-        <StackLayout class="sidedrawer-list-item" orientation="horizontal">
+        <StackLayout class="sidedrawer-list-item" orientation="horizontal" flexShrink="0">
           <Label class="icon text-danger" :text="String.fromCharCode(0xf1f4)" />
           <Label class="title text-danger" text="Reset" @tap="resetData" />
         </StackLayout>
-      </StackLayout>
+      </FlexboxLayout>
 
-      <StackLayout ~mainContent columns="*" rows="*">
+      <StackLayout ~mainContent>
         <ListView for="animal in animalsList" class="list-group" @itemTap="viewAnimal">
           <v-template>
             <Label class="list-group-item list-group-item-heading" :text="`${animal.name} (${animal.type})`" />

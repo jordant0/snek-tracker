@@ -30,19 +30,57 @@
   <Page class="page">
     <ActionBar class="action-bar">
       <GridLayout width="100%" columns="auto, *">
-        <Label class="icon" :text="String.fromCharCode(0xf2fa)" @tap="$navigateBack" col="0" />
+        <Label class="icon" :text="String.fromCharCode(0xf278)" @tap="$refs.drawer.nativeView.showDrawer()" col="0" />
         <Label class="title" :text="animal.name"  col="1"/>
       </GridLayout>
     </ActionBar>
 
-    <StackLayout>
-      <Label :text="animal.name" />
+    <RadSideDrawer ref="drawer">
+      <FlexboxLayout ~drawerContent class="sidedrawer-content">
+        <StackLayout>
+          <Label class="sidedrawer-header" text="Add Event"/>
 
-      <Label :text="birthdate" />
+          <StackLayout class="sidedrawer-list-item" orientation="horizontal">
+            <Label class="icon" :text="String.fromCharCode(0xf153)" />
+            <Label class="title" text="Feeding" />
+          </StackLayout>
 
-      <Label :text="animal.type" />
+          <StackLayout class="sidedrawer-list-item" orientation="horizontal">
+            <Label class="icon" :text="String.fromCharCode(0xf207)" />
+            <Label class="title" text="Handling" />
+          </StackLayout>
 
-      <Label :text="animal.species" />
-    </StackLayout>
+          <StackLayout class="sidedrawer-list-item" orientation="horizontal">
+            <Label class="icon" :text="String.fromCharCode(0xf1bb)" />
+            <Label class="title" text="Weight" />
+          </StackLayout>
+
+          <StackLayout class="sidedrawer-list-item" orientation="horizontal">
+            <Label class="icon" :text="String.fromCharCode(0xf254)" />
+            <Label class="title" text="Shedding" />
+          </StackLayout>
+
+          <StackLayout class="sidedrawer-list-item" orientation="horizontal">
+            <Label class="icon" :text="String.fromCharCode(0xf27d)" />
+            <Label class="title" text="Other" />
+          </StackLayout>
+        </StackLayout>
+
+        <StackLayout class="sidedrawer-list-item" orientation="horizontal" flexShrink="0">
+          <Label class="icon" :text="String.fromCharCode(0xf2fa)" />
+          <Label class="title" text="Back" @tap="$navigateBack" />
+        </StackLayout>
+      </FlexboxLayout>
+
+      <StackLayout ~mainContent>
+        <Label :text="animal.name" />
+
+        <Label :text="birthdate" />
+
+        <Label :text="animal.type" />
+
+        <Label :text="animal.species" />
+      </StackLayout>
+    </RadSideDrawer>
   </Page>
 </template>

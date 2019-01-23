@@ -9,7 +9,7 @@
 
 label.sidedrawer-header {
   color: #ffffff;
-  padding: 50 16 16 16;
+  padding: 30 16 16 16;
   font-size: 24;
 }
 
@@ -28,6 +28,11 @@ label.sidedrawer-header {
 
 .list-group-item {
   padding: 20;
+}
+
+.sidedrawer-content {
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .sidedrawer-list-item {
