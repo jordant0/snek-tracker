@@ -27,8 +27,8 @@
 </script>
 
 <template>
-  <Page>
-    <ActionBar>
+  <Page class="page">
+    <ActionBar class="action-bar">
       <GridLayout width="100%" columns="auto, *">
         <Label class="icon" :text="String.fromCharCode(0xf2fa)" @tap="$navigateBack" col="0" />
         <Label class="title" :text="animal.name"  col="1"/>

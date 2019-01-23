@@ -1,15 +1,31 @@
-// NativeScript core theme
-// @see https://docs.nativescript.org/ui/theme
-@import '~nativescript-theme-core/scss/forest';
+@import '~nativescript-theme-core/scss/light';
 
-// Override variables here
-
-@import '~nativescript-theme-core/scss/index';
-
-// Global SCSS styling
-// @see https://docs.nativescript.org/ui/styling
+@import './styles/custom.css';
 
 .icon {
   font-family: 'Material-Design-Iconic-Font';
   font-size: 32;
+}
+
+label.sidedrawer-header {
+  color: #ffffff;
+  padding: 50 16 16 16;
+  font-size: 24;
+}
+
+.action-bar label {
+  vertical-align: center;
+  color: #ffffff;
+}
+
+.action-bar label.icon {
+  padding-right: 20;
+}
+
+.action-bar label.title {
+  font-size: 16;
+}
+
+.list-group-item, .sidedrawer-list-item {
+  padding: 10 20;
 }

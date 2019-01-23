@@ -42,8 +42,8 @@
 </script>
 
 <template>
-  <Page>
-    <ActionBar>
+  <Page class="page">
+    <ActionBar class="action-bar">
       <GridLayout width="100%" columns="auto, *">
         <Label class="icon" :text="String.fromCharCode(0xf197)" @tap="$refs.drawer.nativeView.showDrawer()" col="0" />
         <Label class="title" text="Snek Tracker"  col="1"/>
@@ -52,49 +52,19 @@
 
     <RadSideDrawer ref="drawer">
       <StackLayout ~drawerContent backgroundColor="#ffffff">
-        <Label class="drawer-header" text="Menu"/>
+        <Label class="sidedrawer-header" text="Menu"/>
 
-        <Label class="drawer-item" text="Add Animal" @tap="addAnimal"/>
-        <Label class="drawer-item" text="Reset" @tap="resetData"/>
+        <Label class="sidedrawer-list-item" text="Add Animal" @tap="addAnimal"/>
+        <Label class="sidedrawer-list-item" text="Reset" @tap="resetData"/>
       </StackLayout>
 
       <StackLayout ~mainContent columns="*" rows="*">
-        <ListView for="animal in animalsList" @itemTap="viewAnimal">
+        <ListView for="animal in animalsList" class="list-group" @itemTap="viewAnimal">
           <v-template>
-            <Label class="list-item" :text="`${animal.name} (${animal.type})`" />
+            <Label class="list-group-item" :text="`${animal.name} (${animal.type})`" />
           </v-template>
         </ListView>
       </StackLayout>
     </RadSideDrawer>
   </Page>
 </template>
-
-<style>
-  ActionBar {
-    background-color: #53ba82;
-    color: #ffffff;
-  }
-
-  .list-item {
-    padding: 10 20;
-  }
-
-  .title {
-    text-align: left;
-    padding-left: 16;
-  }
-
-  .drawer-header {
-    padding: 50 16 16 16;
-    margin-bottom: 16;
-    background-color: #53ba82;
-    color: #ffffff;
-    font-size: 24;
-  }
-
-  .drawer-item {
-    padding: 8 16;
-    color: #333333;
-    font-size: 16;
-  }
-</style>
