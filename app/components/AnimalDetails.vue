@@ -1,4 +1,6 @@
 <script>
+  import AddEvent from './AddEvent'
+
   export default {
     props: {
       animalId: {
@@ -23,6 +25,15 @@
         }
       },
     },
+
+    methods: {
+      addEvent(type) {
+        this.$navigateTo(AddEvent, {props: {
+          animalId: this.animalId,
+          type,
+        }})
+      },
+    },
   }
 </script>
 
@@ -38,27 +49,27 @@
 
     <RadSideDrawer ref="drawer" drawerLocation="Right">
       <StackLayout ~drawerContent class="sidedrawer-content">
-        <StackLayout class="sidedrawer-list-item" orientation="horizontal">
+        <StackLayout class="sidedrawer-list-item" orientation="horizontal" @tap="addEvent('Feeding')">
           <Label class="icon" :text="String.fromCharCode(0xf153)" />
           <Label class="title" text="Feeding" />
         </StackLayout>
 
-        <StackLayout class="sidedrawer-list-item" orientation="horizontal">
+        <StackLayout class="sidedrawer-list-item" orientation="horizontal" @tap="addEvent('Handling')">
           <Label class="icon" :text="String.fromCharCode(0xf207)" />
           <Label class="title" text="Handling" />
         </StackLayout>
 
-        <StackLayout class="sidedrawer-list-item" orientation="horizontal">
+        <StackLayout class="sidedrawer-list-item" orientation="horizontal" @tap="addEvent('Weight')">
           <Label class="icon" :text="String.fromCharCode(0xf1bb)" />
           <Label class="title" text="Weight" />
         </StackLayout>
 
-        <StackLayout class="sidedrawer-list-item" orientation="horizontal">
+        <StackLayout class="sidedrawer-list-item" orientation="horizontal" @tap="addEvent('Shedding')">
           <Label class="icon" :text="String.fromCharCode(0xf254)" />
           <Label class="title" text="Shedding" />
         </StackLayout>
 
-        <StackLayout class="sidedrawer-list-item" orientation="horizontal">
+        <StackLayout class="sidedrawer-list-item" orientation="horizontal" @tap="addEvent('Other')">
           <Label class="icon" :text="String.fromCharCode(0xf27d)" />
           <Label class="title" text="Other" />
         </StackLayout>

@@ -32,7 +32,6 @@ function setEventData(id, eventData) {
     animalId: eventData.animalId,
     type: eventData.type,
     notes: eventData.notes,
-    time: eventData.time,
   }
 
   if(eventData.date) {
@@ -44,6 +43,16 @@ function setEventData(id, eventData) {
   }
   else {
     newEvent.date = {}
+  }
+
+  if(eventData.time) {
+    newEvent.time = {
+      hour: eventData.time.getHours(),
+      minute: eventData.time.getMinutes(),
+    }
+  }
+  else {
+    newEvent.time = {}
   }
 
   return newEvent;
@@ -79,6 +88,7 @@ const INITIAL_STATE = {
         hour: 0,
         minute: 0,
       },
+      value: null,
       notes: 'Test',
     },
   },
@@ -126,7 +136,7 @@ const store = new Vuex.Store({
       Vue.delete(state.animals, id);
     },
 
-    aAddEvent(state, { eventData }) {
+    addEvent(state, { eventData }) {
       Vue.set(state.events, state.nextEventId, setEventData(state.nextEventId, eventData));
       state.nextEventId += 1;
     },

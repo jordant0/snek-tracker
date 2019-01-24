@@ -36,7 +36,7 @@
         if(event.item) {
           this.$navigateTo(AnimalDetails, {props: {animalId: event.item.id}})
         }
-      }
+      },
     },
   }
 </script>
@@ -44,9 +44,10 @@
 <template>
   <Page class="page">
     <ActionBar class="action-bar">
-      <GridLayout width="100%" columns="auto, *">
+      <GridLayout width="100%" columns="auto, *, auto">
         <Label class="icon" :text="String.fromCharCode(0xf197)" @tap="$refs.drawer.nativeView.showDrawer()" col="0" />
         <Label class="title" text="Snek Tracker"  col="1"/>
+        <Label class="icon" :text="String.fromCharCode(0xf278)" @tap="addAnimal" col="2" paddingLeft="10" />
       </GridLayout>
     </ActionBar>
 
@@ -55,15 +56,15 @@
         <StackLayout>
           <Label class="sidedrawer-header" text="Menu"/>
 
-          <StackLayout class="sidedrawer-list-item" orientation="horizontal">
+          <StackLayout class="sidedrawer-list-item" orientation="horizontal" @tap="addAnimal">
             <Label class="icon" :text="String.fromCharCode(0xf1ff)" />
-            <Label class="title" text="Add Animal" @tap="addAnimal" />
+            <Label class="title" text="Add Animal" />
           </StackLayout>
         </StackLayout>
 
-        <StackLayout class="sidedrawer-list-item" orientation="horizontal" flexShrink="0">
+        <StackLayout class="sidedrawer-list-item" orientation="horizontal" flexShrink="0" @tap="resetData">
           <Label class="icon text-danger" :text="String.fromCharCode(0xf1f4)" />
-          <Label class="title text-danger" text="Reset" @tap="resetData" />
+          <Label class="title text-danger" text="Reset" />
         </StackLayout>
       </FlexboxLayout>
 
