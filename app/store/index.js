@@ -132,11 +132,11 @@ const store = new Vuex.Store({
       Vue.set(state.animals, id, setAnimalData(id, animalData));
     },
 
-    removeAnimal(state, { id }) {
+    removeAnimal(state, id) {
       Vue.delete(state.animals, id);
     },
 
-    addEvent(state, { eventData }) {
+    addEvent(state, eventData) {
       Vue.set(state.events, state.nextEventId, setEventData(state.nextEventId, eventData));
       state.nextEventId += 1;
     },
@@ -145,7 +145,7 @@ const store = new Vuex.Store({
       Vue.set(state.events, id, setEventData(id, eventData));
     },
 
-    removeEvent(state, { id }) {
+    removeEvent(state, id) {
       Vue.delete(state.events, id);
     },
   }

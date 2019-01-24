@@ -46,7 +46,7 @@
     <ActionBar class="action-bar">
       <GridLayout width="100%" columns="auto, *, auto">
         <Label class="icon" :text="String.fromCharCode(0xf197)" @tap="$refs.drawer.nativeView.showDrawer()" col="0" />
-        <Label class="title" text="Snek Tracker"  col="1"/>
+        <Label class="title" text="Herps Tracker"  col="1"/>
         <Label class="icon" :text="String.fromCharCode(0xf278)" @tap="addAnimal" col="2" paddingLeft="10" />
       </GridLayout>
     </ActionBar>
