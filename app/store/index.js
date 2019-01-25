@@ -106,6 +106,45 @@ const store = new Vuex.Store({
     getAnimal: (state) => (id) => {
       return state.animals[id];
     },
+
+    sortedEventIds: state => {
+      return Object.keys(state.events).sort((idB, idA) => {
+        let eventA = state.events[idA],
+            eventB = state.events[idB];
+
+        if (eventA.date.year === eventB.date.year) {
+          if (eventA.date.month === eventB.date.month) {
+            if (eventA.date.day === eventB.date.day) {
+              if(eventA.time && eventB.time) {
+                if(eventA.time.hour === eventB.time.hour) {
+                  return eventA.time.minute - eventB.time.minute;
+                }
+                else {
+                  return eventA.time.hour - eventB.time.hour;
+                }
+              }
+              else {
+                if(eventB.time) {
+                  return 1;
+                }
+                else {
+                  return -1;
+                }
+              }
+            }
+            else {
+              return eventA.date.day - eventB.date.day;
+            }
+          }
+          else {
+            return eventA.date.month - eventB.date.month;
+          }
+        }
+        else {
+          return eventA.date.year - eventB.date.year;
+        }
+      });
+    },
   },
 
   mutations: {
@@ -128,8 +167,8 @@ const store = new Vuex.Store({
       state.nextAnimalId += 1;
     },
 
-    updateAnimal(state, { id, animalData }) {
-      Vue.set(state.animals, id, setAnimalData(id, animalData));
+    updateAnimal(state, animalData) {
+      Vue.set(state.animals, animalData.id, setAnimalData(animalData.id, animalData));
     },
 
     removeAnimal(state, id) {
@@ -141,8 +180,8 @@ const store = new Vuex.Store({
       state.nextEventId += 1;
     },
 
-    updateEvent(state, { id, eventData }) {
-      Vue.set(state.events, id, setEventData(id, eventData));
+    updateEvent(state, eventData) {
+      Vue.set(state.events, eventData.id, setEventData(eventData.id, eventData));
     },
 
     removeEvent(state, id) {

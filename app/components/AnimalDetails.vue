@@ -1,5 +1,6 @@
 <script>
   import AddEvent from './AddEvent'
+  import { mapState, mapGetters } from 'vuex'
 
   export default {
     props: {
@@ -10,6 +11,21 @@
     },
 
     computed: {
+      ...mapState([
+        'events'
+      ]),
+
+      ...mapGetters([
+        'sortedEventIds',
+      ]),
+
+      eventIdsForAnimal() {
+        return this.sortedEventIds.filter((eventId) => {
+          let event = this.events[eventId];
+          return event && event.animalId === this.animalId;
+        });
+      },
+
       animal() {
         return this.$store.getters.getAnimal(this.animalId);
       },
@@ -32,6 +48,44 @@
           animalId: this.animalId,
           type,
         }})
+      },
+
+      eventDisplay(id) {
+        let date, timestamp, details, notes, hour, minute, suffix,
+            animalName = this.animal.name,
+            event = this.events[id];
+
+        if(!event) {
+          return '';
+        }
+
+        date = `${event.date.month + 1}/${event.date.day}/${event.date.year}`;
+        notes = event.notes ? ` ${event.notes}` : '';
+
+        if(event.time) {
+          hour = event.time.hour <= 12 ? event.time.hour : event.time.hour -12;
+          minute = event.time.minute < 10 ? `0${event.time.minute}` : event.time.minute;
+          suffix = event.time.hour < 12 ? 'AM' : 'PM';
+          timestamp = ` at ${hour}:${minute} ${suffix}`;
+        }
+
+        switch(event.type) {
+          case 'Feeding':
+            details = `Fed ${animalName}`
+            break;
+          case 'Handling':
+            details = `Handled ${animalName}`
+            break;
+          case 'Weight':
+            details = `Weight ${animalName}: ${event.value}g`
+            break;
+          case 'Shedding':
+            details = `${animalName} shed`
+            break;
+          default:
+            details = `${animalName}`
+        }
+        return `${date} - ${details}${timestamp}: ${notes}`
       },
     },
   }
@@ -83,6 +137,12 @@
         <Label :text="animal.type" />
 
         <Label :text="animal.species" />
+
+        <ListView for="id in eventIdsForAnimal" class="list-group">
+          <v-template>
+            <Label class="list-group-item" :text="eventDisplay(id)" />
+          </v-template>
+        </ListView>
       </StackLayout>
     </RadSideDrawer>
   </Page>

@@ -49,7 +49,7 @@
           notes: this.notes,
         });
 
-        this.$navigateTo(AnimalDetails, {props: {animalId: this.animalId.id}})
+        this.$navigateTo(AnimalDetails, {props: {animalId: this.animalId}})
       },
     },
   }
