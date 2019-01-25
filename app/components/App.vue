@@ -73,9 +73,9 @@
           <v-template>
             <StackLayout class="list-group-item">
               <Label class="list-group-item-heading" :text="animal.name" />
-              <Label v-if="animal.type" class="list-group-item-text" :text="animal.type" />
               <Label v-if="animal.species" class="list-group-item-text" :text="animal.species" />
-              <Label v-if="animal.birthdate" class="list-group-item-text" :text="`${animal.birthdate.month + 1}/${animal.birthdate.day}/${animal.birthdate.year}`" />
+              <Label v-if="animal.birthdate" class="list-group-item-text" :text="`Birthdate: ${animal.birthdate.month + 1}/${animal.birthdate.day}/${animal.birthdate.year}`" />
+              <Label v-if="animal.arrival" class="list-group-item-text" :text="`Arrived: ${animal.arrival.month + 1}/${animal.arrival.day}/${animal.arrival.year}`" />
             </StackLayout>
           </v-template>
         </ListView>

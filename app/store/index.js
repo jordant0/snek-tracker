@@ -22,6 +22,17 @@ function setAnimalData(id, animalData) {
     newAnimal.birthdate = {}
   }
 
+  if(animalData.arrival) {
+    newAnimal.arrival = {
+      day: animalData.arrival.getDate(),
+      month: animalData.arrival.getMonth(),
+      year: animalData.arrival.getYear() + 1900,
+    }
+  }
+  else {
+    newAnimal.arrival = {}
+  }
+
   return newAnimal;
 };
 

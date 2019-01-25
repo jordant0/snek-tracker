@@ -7,6 +7,7 @@
         name: '',
         birthdate: new Date(),
         species: '',
+        arrival: new Date(),
       }
     },
 
@@ -16,6 +17,7 @@
           name: this.name,
           birthdate: this.birthdate,
           species: this.species,
+          arrival: this.arrival,
         });
 
         this.$navigateTo(App)
@@ -49,6 +51,11 @@
           <StackLayout class="form-field" marginBottom="20">
             <Label class="label" text="Species" />
             <TextField v-model="species" hint="Enter species name..." />
+          </StackLayout>
+
+          <StackLayout class="form-field">
+            <Label class="label" text="Arrival Date" />
+            <DatePicker v-model="arrival" />
           </StackLayout>
         </StackLayout>
       </ScrollView>

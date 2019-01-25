@@ -47,10 +47,22 @@
       },
 
       eventIdsForAnimal() {
-        return this.sortedEventIds.filter((eventId) => {
+        let ids = this.sortedEventIds.filter((eventId) => {
           let event = this.events[eventId];
           return event && event.animalId === this.animalId && (!this.fitlerValue || event.type === this.fitlerValue);
         });
+
+        if(!this.fitlerValue && this.animal) {
+          if(this.animal.arrival) {
+            ids.push(-1)
+          }
+
+          if(this.animal.birthdate) {
+            ids.push(-2)
+          }
+        }
+
+        return ids;
       },
 
       animal() {
@@ -74,6 +86,13 @@
       },
 
       eventIcon(id) {
+        if(id === -1) {
+          return 0xf175;
+        }
+        else if(id === -2) {
+          return 0xf122;
+        }
+
         let event = this.events[id];
 
         if(!event) {
@@ -107,43 +126,60 @@
       },
 
       eventDisplay(id) {
-        let date, timestamp, details, hour, minute, suffix,
-            animalName = this.animal.name,
-            event = this.events[id];
+        let dateString, timestamp, details, hour, minute, suffix, date, time, event,
+            animalName = this.animal.name;
 
-        if(!event) {
-          return '';
+
+        if(id === -1) {
+          details = `${animalName}'s arrival`;
+          date = this.animal.arrival;
+        }
+        else if(id === -2) {
+          details = `${animalName}'s birthdate`;
+          date = this.animal.birthdate;
+        }
+        else {
+          event = this.events[id];
+          if(!event) {
+            return '';
+          }
+
+          date = event.date;
+          time = event.time;
+          switch(event.type) {
+            case 'Feeding':
+              details = `Fed ${animalName}`
+              break;
+            case 'Handling':
+              details = `Handled ${animalName} for ${event.value} minutes`
+              break;
+            case 'Weight':
+              details = `Weighed ${animalName}: ${event.value}g`
+              break;
+            case 'Shedding':
+              details = `${animalName} shed`
+              break;
+            case 'Maintenance':
+              details = `Maintenance for ${animalName}`
+              break;
+            default:
+              details = `${animalName}`
+          }
         }
 
-        date = `${event.date.month + 1}/${event.date.day}/${event.date.year % 1000}`;
+        dateString = `${date.month + 1}/${date.day}/${date.year % 1000}`;
 
-        if(event.time) {
-          hour = event.time.hour <= 12 ? event.time.hour : event.time.hour -12;
-          minute = event.time.minute < 10 ? `0${event.time.minute}` : event.time.minute;
-          suffix = event.time.hour < 12 ? 'am' : 'pm';
+        if(time) {
+          hour = time.hour <= 12 ? time.hour : time.hour -12;
+          minute = time.minute < 10 ? `0${time.minute}` : time.minute;
+          suffix = time.hour < 12 ? 'am' : 'pm';
           timestamp = ` ${hour}:${minute} ${suffix}`;
         }
-
-        switch(event.type) {
-          case 'Feeding':
-            details = `Fed ${animalName}`
-            break;
-          case 'Handling':
-            details = `Handled ${animalName} for ${event.value} minutes`
-            break;
-          case 'Weight':
-            details = `Weighed ${animalName}: ${event.value}g`
-            break;
-          case 'Shedding':
-            details = `${animalName} shed`
-            break;
-          case 'Maintenance':
-            details = `Maintenance for ${animalName}`
-            break;
-          default:
-            details = `${animalName}`
+        else {
+          timestamp = '';
         }
-        return `${date}${timestamp} - ${details}`;
+
+        return `${dateString}${timestamp} - ${details}`;
       },
     },
   }
