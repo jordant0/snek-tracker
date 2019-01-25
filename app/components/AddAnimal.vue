@@ -6,18 +6,8 @@
       return {
         name: '',
         birthdate: new Date(),
-        typeIndex: 0,
         species: '',
       }
-    },
-
-    created() {
-      this.typesList = [
-        'Other',
-        'Snake',
-        'Lizard',
-        'Bird',
-      ];
     },
 
     methods: {
@@ -25,7 +15,6 @@
         this.$store.commit('addAnimal', {
           name: this.name,
           birthdate: this.birthdate,
-          type: this.typesList[this.typeIndex],
           species: this.species,
         });
 
@@ -55,11 +44,6 @@
           <StackLayout class="form-field">
             <Label class="label" text="Birthdate" />
             <DatePicker v-model="birthdate" />
-          </StackLayout>
-
-          <StackLayout class="form-field">
-            <Label class="label" text="Type" />
-            <ListPicker :items="typesList" v-model="typeIndex" />
           </StackLayout>
 
           <StackLayout class="form-field" marginBottom="20">

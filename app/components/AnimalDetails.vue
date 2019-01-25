@@ -89,13 +89,25 @@
             return 0xf1bb;
           case 'Shedding':
             return 0xf254;
+          case 'Maintenance':
+            return 0xf1ed;
           default:
             return 0xf27d;
         }
       },
 
+      eventNotes(id) {
+        let event = this.events[id];
+
+        if(!event) {
+          return null;
+        }
+
+        return event.notes;
+      },
+
       eventDisplay(id) {
-        let date, timestamp, details, notes, hour, minute, suffix,
+        let date, timestamp, details, hour, minute, suffix,
             animalName = this.animal.name,
             event = this.events[id];
 
@@ -103,14 +115,13 @@
           return '';
         }
 
-        date = `${event.date.month + 1}/${event.date.day}/${event.date.year}`;
-        notes = event.notes ? ` ${event.notes}` : '';
+        date = `${event.date.month + 1}/${event.date.day}/${event.date.year % 1000}`;
 
         if(event.time) {
           hour = event.time.hour <= 12 ? event.time.hour : event.time.hour -12;
           minute = event.time.minute < 10 ? `0${event.time.minute}` : event.time.minute;
-          suffix = event.time.hour < 12 ? 'AM' : 'PM';
-          timestamp = ` at ${hour}:${minute} ${suffix}`;
+          suffix = event.time.hour < 12 ? 'am' : 'pm';
+          timestamp = ` ${hour}:${minute} ${suffix}`;
         }
 
         switch(event.type) {
@@ -118,18 +129,21 @@
             details = `Fed ${animalName}`
             break;
           case 'Handling':
-            details = `Handled ${animalName}`
+            details = `Handled ${animalName} for ${event.value} minutes`
             break;
           case 'Weight':
-            details = `Weight ${animalName}: ${event.value}g`
+            details = `Weighed ${animalName}: ${event.value}g`
             break;
           case 'Shedding':
             details = `${animalName} shed`
             break;
+          case 'Maintenance':
+            details = `Maintenance for ${animalName}`
+            break;
           default:
             details = `${animalName}`
         }
-        return `${date} - ${details}${timestamp}: ${notes}`
+        return `${date}${timestamp} - ${details}`;
       },
     },
   }
@@ -168,6 +182,11 @@
           <Label class="title" text="Shedding" />
         </StackLayout>
 
+        <StackLayout class="sidedrawer-list-item" orientation="horizontal" @tap="addEvent('Maintenance')">
+          <Label class="icon" :text="String.fromCharCode(0xf1ed)" />
+          <Label class="title" text="Maintenance" />
+        </StackLayout>
+
         <StackLayout class="sidedrawer-list-item" orientation="horizontal" @tap="addEvent('Other')">
           <Label class="icon" :text="String.fromCharCode(0xf27d)" />
           <Label class="title" text="Other" />
@@ -179,7 +198,10 @@
           <v-template>
             <StackLayout class="list-group-item list-group-item--events" orientation="horizontal">
               <Label class="icon" :text="String.fromCharCode(eventIcon(id))" />
-              <Label :text="eventDisplay(id)" />
+              <StackLayout>
+                <Label :text="eventDisplay(id)" />
+                <Label v-if="eventNotes(id)" class="list-group-item-text" :text="eventNotes(id)" />
+              </StackLayout>
             </StackLayout>
           </v-template>
         </ListView>

@@ -81,6 +81,10 @@
             <Label class="label" text="Weight" />
             <TextField v-model="value" keyboardType="number" hint="In grams" />
           </StackLayout>
+          <StackLayout v-else-if="type === 'Handling'" class="form-field" marginBottom="20">
+            <Label class="label" text="Time" />
+            <TextField v-model="value" keyboardType="number" hint="In minutes" />
+          </StackLayout>
 
           <StackLayout class="form-field" marginBottom="20">
             <Label class="label" text="Notes" />

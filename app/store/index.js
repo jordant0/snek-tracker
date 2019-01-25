@@ -8,7 +8,6 @@ function setAnimalData(id, animalData) {
   let newAnimal = {
     id: id,
     name: animalData.name,
-    type: animalData.type,
     species: animalData.species,
   }
 
@@ -64,7 +63,6 @@ const INITIAL_STATE = {
     0: {
       id: 0,
       name: 'Test',
-      type: 'Unknown',
       species: null,
       birthdate: {
         day: 1,
