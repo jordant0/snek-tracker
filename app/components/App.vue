@@ -71,7 +71,12 @@
       <StackLayout ~mainContent>
         <ListView for="animal in animalsList" class="list-group" @itemTap="viewAnimal">
           <v-template>
-            <Label class="list-group-item list-group-item-heading" :text="`${animal.name} (${animal.type})`" />
+            <StackLayout class="list-group-item">
+              <Label class="list-group-item-heading" :text="animal.name" />
+              <Label v-if="animal.type" class="list-group-item-text" :text="animal.type" />
+              <Label v-if="animal.species" class="list-group-item-text" :text="animal.species" />
+              <Label v-if="animal.birthdate" class="list-group-item-text" :text="`${animal.birthdate.month + 1}/${animal.birthdate.day}/${animal.birthdate.year}`" />
+            </StackLayout>
           </v-template>
         </ListView>
       </StackLayout>

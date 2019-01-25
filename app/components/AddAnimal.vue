@@ -13,11 +13,10 @@
 
     created() {
       this.typesList = [
-        'Unknown',
+        'Other',
         'Snake',
         'Lizard',
         'Bird',
-        'Fish',
       ];
     },
 

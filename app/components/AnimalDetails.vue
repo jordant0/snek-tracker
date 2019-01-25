@@ -1,5 +1,6 @@
 <script>
   import AddEvent from './AddEvent'
+  import EventsFilterModal from './EventsFilterModal'
   import { mapState, mapGetters } from 'vuex'
 
   export default {
@@ -8,6 +9,23 @@
         type: Number,
         default: 0,
       },
+    },
+
+    created() {
+      this.filters = {
+        0: 'All',
+        1: 'Feeding',
+        2: 'Handling',
+        3: 'Weight',
+        4: 'Shedding',
+        5: 'Other',
+      }
+    },
+
+    data() {
+      return {
+        filter: 0,
+      }
     },
 
     computed: {
@@ -19,26 +37,24 @@
         'sortedEventIds',
       ]),
 
+      fitlerValue() {
+        if(this.filter && this.filters[this.filter] !== 'All') {
+          return this.filters[this.filter];
+        }
+        else {
+          return null;
+        }
+      },
+
       eventIdsForAnimal() {
         return this.sortedEventIds.filter((eventId) => {
           let event = this.events[eventId];
-          return event && event.animalId === this.animalId;
+          return event && event.animalId === this.animalId && (!this.fitlerValue || event.type === this.fitlerValue);
         });
       },
 
       animal() {
         return this.$store.getters.getAnimal(this.animalId);
-      },
-
-      birthdate() {
-        let date = this.animal.birthdate;
-
-        if(date) {
-          return `${date.month}/${date.day}/${date.year}`;
-        }
-        else {
-          return '';
-        }
       },
     },
 
@@ -48,6 +64,34 @@
           animalId: this.animalId,
           type,
         }})
+      },
+
+      filterList() {
+        this.$showModal(EventsFilterModal, { props: { currentFilter: this.filter }})
+        .then((selected) => {
+          this.filter = selected;
+        });
+      },
+
+      eventIcon(id) {
+        let event = this.events[id];
+
+        if(!event) {
+          return 0xf27d;
+        }
+
+        switch(event.type) {
+          case 'Feeding':
+            return 0xf153;
+          case 'Handling':
+            return 0xf207;
+          case 'Weight':
+            return 0xf1bb;
+          case 'Shedding':
+            return 0xf254;
+          default:
+            return 0xf27d;
+        }
       },
 
       eventDisplay(id) {
@@ -94,10 +138,11 @@
 <template>
   <Page class="page">
     <ActionBar class="action-bar">
-      <GridLayout width="100%" columns="auto, *, auto">
+      <GridLayout width="100%" columns="auto, *, auto, auto">
         <Label class="icon" :text="String.fromCharCode(0xf2fa)" @tap="$navigateBack" col="0" />
         <Label class="title" :text="animal.name"  col="1"/>
-        <Label class="icon" :text="String.fromCharCode(0xf278)" @tap="$refs.drawer.nativeView.showDrawer()" col="2" paddingLeft="10" />
+        <Label class="icon" :text="String.fromCharCode(0xf160)" @tap="filterList" col="2" paddingLeft="10" paddingRight="10" />
+        <Label class="icon" :text="String.fromCharCode(0xf278)" @tap="$refs.drawer.nativeView.showDrawer()" col="3" paddingLeft="10" />
       </GridLayout>
     </ActionBar>
 
@@ -130,17 +175,12 @@
       </StackLayout>
 
       <StackLayout ~mainContent>
-        <Label :text="animal.name" />
-
-        <Label :text="birthdate" />
-
-        <Label :text="animal.type" />
-
-        <Label :text="animal.species" />
-
         <ListView for="id in eventIdsForAnimal" class="list-group">
           <v-template>
-            <Label class="list-group-item" :text="eventDisplay(id)" />
+            <StackLayout class="list-group-item list-group-item--events" orientation="horizontal">
+              <Label class="icon" :text="String.fromCharCode(eventIcon(id))" />
+              <Label :text="eventDisplay(id)" />
+            </StackLayout>
           </v-template>
         </ListView>
       </StackLayout>

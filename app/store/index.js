@@ -32,6 +32,7 @@ function setEventData(id, eventData) {
     animalId: eventData.animalId,
     type: eventData.type,
     notes: eventData.notes,
+    value: eventData.value,
   }
 
   if(eventData.date) {

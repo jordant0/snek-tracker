@@ -28,6 +28,28 @@ label.sidedrawer-header {
 
 .list-group-item {
   padding: 20;
+
+  label {
+    vertical-align: center;
+  }
+
+  label.icon {
+    margin-right: 10;
+    font-size: 18;
+  }
+}
+
+.list-group-item-heading {
+  font-size: 18;
+  font-weight: 600;
+}
+
+.list-group-item-text {
+  padding: 5 10 0 10;
+}
+
+.list-group-item--events {
+  padding: 20 10;
 }
 
 .sidedrawer-content {
