@@ -1,6 +1,6 @@
 <script>
   import { mapGetters } from 'vuex'
-  import AddAnimal from './AddAnimal'
+  import AnimalForm from './AnimalForm'
   import AnimalDetails from './AnimalDetails'
 
   export default {
@@ -18,7 +18,7 @@
 
     methods: {
       addAnimal() {
-        this.$navigateTo(AddAnimal)
+        this.$navigateTo(AnimalForm)
       },
 
       resetData() {
@@ -46,6 +46,10 @@
         swipeLimits.left = leftItem.getMeasuredWidth();
         swipeLimits.right = rightItem.getMeasuredWidth();
         swipeLimits.threshold = leftItem.getMeasuredWidth() / 2;
+      },
+
+      editAnimal({ object }) {
+        this.$navigateTo(AnimalForm, {props: { animalId: object.bindingContext.id }})
       },
 
       deleteAnimal({ object }) {
@@ -101,7 +105,7 @@
 
           <v-template name="itemswipe">
             <GridLayout columns="auto, *, auto" backgroundColor="White">
-              <FlexboxLayout id="left-swipe" col="0" class="swipe-item left">
+              <FlexboxLayout id="left-swipe" col="0" class="swipe-item left" @tap="editAnimal">
                 <Label class="icon swipe-action" :text="String.fromCharCode(0xf158)" />
               </FlexboxLayout>
               <FlexboxLayout id="right-swipe" col="2" class="swipe-item right" @tap="deleteAnimal">
