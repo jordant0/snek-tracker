@@ -16,6 +16,7 @@
           birthdate: new Date(),
           species: '',
           arrival: new Date(),
+          feedingDuration: null,
         }
       } else {
         let animal = this.$store.getters.getAnimal(this.animalId),
@@ -27,6 +28,7 @@
           birthdate: new Date(birthdate.year, birthdate.month, birthdate.day),
           species: animal.species,
           arrival: new Date(arrival.year, arrival.month, arrival.day),
+          feedingDuration: animal.feedingDuration,
         }
       }
     },
@@ -52,6 +54,7 @@
           birthdate: this.birthdate,
           species: this.species,
           arrival: this.arrival,
+          feedingDuration: this.feedingDuration,
         };
 
         if(this.newAnimal) {
@@ -92,6 +95,11 @@
           <StackLayout class="form-field" marginBottom="20">
             <Label class="label" text="Species" />
             <TextField v-model="species" hint="Enter species name..." />
+          </StackLayout>
+
+          <StackLayout  class="form-field" marginBottom="20">
+            <Label class="label" text="Feeding Duration" />
+            <TextField v-model="feedingDuration" keyboardType="number" hint="Every (x) days" />
           </StackLayout>
 
           <StackLayout class="form-field">

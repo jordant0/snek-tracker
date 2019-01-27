@@ -266,33 +266,38 @@
       </StackLayout>
 
       <StackLayout ~mainContent>
-        <RadListView
-          for="id in eventIdsForAnimal"
-          class="list-group"
-          swipeActions="true"
-          @itemSwipeProgressStarted="onSwipeStarted"
-        >
-          <v-template>
-            <StackLayout class="list-group-item list-group-item--events" orientation="horizontal">
-              <Label class="icon" :text="String.fromCharCode(eventIcon(id))" />
-              <StackLayout>
-                <Label :text="eventDisplay(id)" />
-                <Label v-if="eventNotes(id)" class="list-group-item-text" :text="eventNotes(id)" />
+        <StackLayout v-if="eventIdsForAnimal.length">
+          <RadListView
+            for="id in eventIdsForAnimal"
+            class="list-group"
+            swipeActions="true"
+            @itemSwipeProgressStarted="onSwipeStarted"
+          >
+            <v-template>
+              <StackLayout class="list-group-item list-group-item--events" orientation="horizontal">
+                <Label class="icon" :text="String.fromCharCode(eventIcon(id))" />
+                <StackLayout>
+                  <Label :text="eventDisplay(id)" />
+                  <Label v-if="eventNotes(id)" class="list-group-item-text" :text="eventNotes(id)" />
+                </StackLayout>
               </StackLayout>
-            </StackLayout>
-          </v-template>
+            </v-template>
 
-          <v-template name="itemswipe">
-            <GridLayout columns="auto, *, auto" backgroundColor="White">
-              <FlexboxLayout id="left-swipe" col="0" class="swipe-item left" @tap="editEvent">
-                <Label class="icon swipe-action" :text="String.fromCharCode(0xf158)" />
-              </FlexboxLayout>
-              <FlexboxLayout id="right-swipe" col="2" class="swipe-item right" @tap="deleteEvent">
-                <Label class="icon swipe-action" :text="String.fromCharCode(0xf154)" />
-              </FlexboxLayout>
-            </GridLayout>
-          </v-template>
-        </RadListView>
+            <v-template name="itemswipe">
+              <GridLayout columns="auto, *, auto" backgroundColor="White">
+                <FlexboxLayout id="left-swipe" col="0" class="swipe-item left" @tap="editEvent">
+                  <Label class="icon swipe-action" :text="String.fromCharCode(0xf158)" />
+                </FlexboxLayout>
+                <FlexboxLayout id="right-swipe" col="2" class="swipe-item right" @tap="deleteEvent">
+                  <Label class="icon swipe-action" :text="String.fromCharCode(0xf154)" />
+                </FlexboxLayout>
+              </GridLayout>
+            </v-template>
+          </RadListView>
+        </StackLayout>
+        <FlexboxLayout v-else class="list-empty">
+          <Label text="No events found" />
+        </FlexboxLayout>
       </StackLayout>
     </RadSideDrawer>
   </Page>

@@ -10,6 +10,7 @@ function setAnimalData(id, animalData) {
     name: animalData.name,
     species: animalData.species,
     lastFed: animalData.lastFed || null,
+    feedingDuration: animalData.feedingDuration,
   }
 
   if(animalData.birthdate) {
@@ -105,38 +106,9 @@ function sortEvents(eventA, eventB) {
 }
 
 const INITIAL_STATE = {
-  animals: {
-    0: {
-      id: 0,
-      name: 'Test',
-      species: null,
-      birthdate: {
-        day: 1,
-        month: 0,
-        year: 1960,
-      },
-    }
-  },
+  animals: {},
   nextAnimalId: 1,
-  test: 'Test text',
-  events: {
-    0: {
-      id: 0,
-      animalId: 0,
-      type: 'Feeding',
-      date: {
-        day: 1,
-        month: 0,
-        year: 1960,
-      },
-      time: {
-        hour: 0,
-        minute: 0,
-      },
-      value: null,
-      notes: 'Test',
-    },
-  },
+  events: {},
   nextEventId: 1,
 }
 

@@ -87,35 +87,43 @@
       </FlexboxLayout>
 
       <StackLayout ~mainContent>
-        <RadListView
-          for="animal in animalsList"
-          class="list-group"
-          swipeActions="true"
-          @itemSwipeProgressStarted="onSwipeStarted"
-          @itemTap="viewAnimal"
-        >
-          <v-template>
-            <StackLayout class="list-group-item">
-              <Label class="list-group-item-heading" :text="animal.name" />
-              <Label v-if="animal.species" class="list-group-item-text" :text="animal.species" />
-              <Label v-if="animal.birthdate" class="list-group-item-text" :text="`Birthdate: ${animal.birthdate.month + 1}/${animal.birthdate.day}/${animal.birthdate.year}`" />
-              <Label v-if="animal.arrival" class="list-group-item-text" :text="`Arrived: ${animal.arrival.month + 1}/${animal.arrival.day}/${animal.arrival.year}`" />
-              <Label v-if="animal.lastFed" class="list-group-item-text" :text="`Last Fed: ${animal.lastFed.month + 1}/${animal.lastFed.day}/${animal.lastFed.year}`" />
-            </StackLayout>
-          </v-template>
+        <StackLayout v-if="animalsList.length">
+          <RadListView
+            for="animal in animalsList"
+            class="list-group"
+            swipeActions="true"
+            @itemSwipeProgressStarted="onSwipeStarted"
+            @itemTap="viewAnimal"
+          >
+            <v-template>
+              <StackLayout class="list-group-item">
+                <Label class="list-group-item-heading" :text="animal.name" />
+                <Label v-if="animal.species" class="list-group-item-text" :text="animal.species" />
 
-          <v-template name="itemswipe">
-            <GridLayout columns="auto, *, auto" backgroundColor="White">
-              <FlexboxLayout id="left-swipe" col="0" class="swipe-item left" @tap="editAnimal">
-                <Label class="icon swipe-action" :text="String.fromCharCode(0xf158)" />
-              </FlexboxLayout>
-              <FlexboxLayout id="right-swipe" col="2" class="swipe-item right" @tap="deleteAnimal">
-                <Label class="icon swipe-action" :text="String.fromCharCode(0xf154)" />
-              </FlexboxLayout>
-            </GridLayout>
-          </v-template>
-        </RadListView>
-        </RadListView >
+                <Label v-if="animal.lastFed" class="list-group-item-text" :text="`Last Fed: ${animal.lastFed.month + 1}/${animal.lastFed.day}/${animal.lastFed.year}`" />
+                <Label v-else-if="animal.feedingDuration" class="list-group-item-text" :text="`Feeding every ${animal.feedingDuration} day(s)`" />
+
+                <Label v-if="animal.birthdate" class="list-group-item-text" :text="`Birthdate: ${animal.birthdate.month + 1}/${animal.birthdate.day}/${animal.birthdate.year}`" />
+                <Label v-if="animal.arrival" class="list-group-item-text" :text="`Arrived: ${animal.arrival.month + 1}/${animal.arrival.day}/${animal.arrival.year}`" />
+              </StackLayout>
+            </v-template>
+
+            <v-template name="itemswipe">
+              <GridLayout columns="auto, *, auto" backgroundColor="White">
+                <FlexboxLayout id="left-swipe" col="0" class="swipe-item left" @tap="editAnimal">
+                  <Label class="icon swipe-action" :text="String.fromCharCode(0xf158)" />
+                </FlexboxLayout>
+                <FlexboxLayout id="right-swipe" col="2" class="swipe-item right" @tap="deleteAnimal">
+                  <Label class="icon swipe-action" :text="String.fromCharCode(0xf154)" />
+                </FlexboxLayout>
+              </GridLayout>
+            </v-template>
+          </RadListView>
+          </RadListView >
+        </StackLayout>
+        <FlexboxLayout v-else class="list-empty">
+          <Label text="No animals added yet" />
+        </FlexboxLayout>
       </StackLayout>
     </RadSideDrawer>
   </Page>
