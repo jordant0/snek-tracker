@@ -52,7 +52,7 @@
           return event && event.animalId === this.animalId && (!this.fitlerValue || event.type === this.fitlerValue);
         });
 
-        if(!this.fitlerValue && this.animal) {
+        if((!this.fitlerValue || this.fitlerValue === 'Other') && this.animal) {
           if(this.animal.arrival) {
             ids.push(-1)
           }

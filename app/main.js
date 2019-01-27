@@ -4,6 +4,7 @@ import VueDevtools from 'nativescript-vue-devtools'
 import store from './store/index'
 import * as ApplicationSettings from "application-settings"
 import Vuex from 'vuex'
+import RadListView from 'nativescript-ui-listview/vue';
 
 import './app.scss'
 
@@ -15,6 +16,7 @@ if(TNS_ENV !== 'production') {
 // Prints Vue logs when --env.production is *NOT* set while building
 Vue.config.silent = (TNS_ENV === 'production')
 
+Vue.use(RadListView);
 Vue.registerElement('RadSideDrawer', () => require('nativescript-ui-sidedrawer').RadSideDrawer)
 
 new Vue({

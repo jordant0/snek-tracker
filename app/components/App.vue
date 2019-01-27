@@ -37,6 +37,20 @@
           this.$navigateTo(AnimalDetails, {props: {animalId: event.item.id}})
         }
       },
+
+      onSwipeStarted ({ data, object }) {
+        const swipeLimits = data.swipeLimits;
+        const swipeView = object;
+        const leftItem = swipeView.getViewById('left-swipe');
+        const rightItem = swipeView.getViewById('right-swipe');
+        swipeLimits.left = leftItem.getMeasuredWidth();
+        swipeLimits.right = rightItem.getMeasuredWidth();
+        swipeLimits.threshold = leftItem.getMeasuredWidth() / 2;
+      },
+
+      deleteAnimal({ object }) {
+        this.$store.commit('removeAnimal', object.bindingContext.id);
+      },
     },
   }
 </script>
@@ -69,7 +83,13 @@
       </FlexboxLayout>
 
       <StackLayout ~mainContent>
-        <ListView for="animal in animalsList" class="list-group" @itemTap="viewAnimal">
+        <RadListView
+          for="animal in animalsList"
+          class="list-group"
+          swipeActions="true"
+          @itemSwipeProgressStarted="onSwipeStarted"
+          @itemTap="viewAnimal"
+        >
           <v-template>
             <StackLayout class="list-group-item">
               <Label class="list-group-item-heading" :text="animal.name" />
@@ -78,7 +98,19 @@
               <Label v-if="animal.arrival" class="list-group-item-text" :text="`Arrived: ${animal.arrival.month + 1}/${animal.arrival.day}/${animal.arrival.year}`" />
             </StackLayout>
           </v-template>
-        </ListView>
+
+          <v-template name="itemswipe">
+            <GridLayout columns="auto, *, auto" backgroundColor="White">
+              <FlexboxLayout id="left-swipe" col="0" class="swipe-item left">
+                <Label class="icon swipe-action" :text="String.fromCharCode(0xf158)" />
+              </FlexboxLayout>
+              <FlexboxLayout id="right-swipe" col="2" class="swipe-item right" @tap="deleteAnimal">
+                <Label class="icon swipe-action" :text="String.fromCharCode(0xf154)" />
+              </FlexboxLayout>
+            </GridLayout>
+          </v-template>
+        </RadListView>
+        </RadListView >
       </StackLayout>
     </RadSideDrawer>
   </Page>

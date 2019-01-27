@@ -28,6 +28,8 @@ label.sidedrawer-header {
 
 .list-group-item {
   padding: 20;
+  border-bottom-color: #ededed;
+  border-bottom-width: 1;
 
   label {
     vertical-align: center;
@@ -87,4 +89,19 @@ label.list-group-item-text {
 .sidedrawer-list-item .title {
   font-size: 18;
   vertical-align: center;
+}
+
+.swipe-item {
+  align-items: center;
+  background-color: #d9534f;
+}
+
+.swipe-item.left {
+  background-color: #30bcff;
+}
+
+label.icon.swipe-action {
+  vertical-align: center;
+  color: #ffffff;
+  padding: 0 20;
 }
