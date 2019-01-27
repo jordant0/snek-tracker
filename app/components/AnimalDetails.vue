@@ -1,6 +1,7 @@
 <script>
   import EventForm from './EventForm'
   import EventsFilterModal from './EventsFilterModal'
+  import App from './App'
   import { mapState, mapGetters } from 'vuex'
 
   export default {
@@ -202,10 +203,19 @@
 
       deleteEvent({ object }) {
         if(object.bindingContext >= 0) {
+          let event = this.events[object.bindingContext];
           this.$store.commit('removeEvent', object.bindingContext);
+
+          if(event && event.type === 'Feeding') {
+            this.$store.commit('recalculateLastFed', event.animalId);
+          }
         } else {
           alert('Cannot remove default events');
         }
+      },
+
+      goBack() {
+        this.$navigateTo(App);
       },
     },
   }
@@ -215,7 +225,7 @@
   <Page class="page">
     <ActionBar class="action-bar">
       <GridLayout width="100%" columns="auto, *, auto, auto">
-        <Label class="icon" :text="String.fromCharCode(0xf2fa)" @tap="$navigateBack" col="0" />
+        <Label class="icon" :text="String.fromCharCode(0xf2fa)" @tap="goBack" col="0" />
         <Label class="title" :text="animal.name"  col="1"/>
         <Label class="icon" :text="String.fromCharCode(0xf160)" @tap="filterList" col="2" paddingLeft="10" paddingRight="10" />
         <Label class="icon" :text="String.fromCharCode(0xf278)" @tap="$refs.drawer.nativeView.showDrawer()" col="3" paddingLeft="10" />

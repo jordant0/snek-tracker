@@ -28,6 +28,7 @@
           notes: '',
           type: this.eventType,
           animalId: this.eventAnimalId,
+          dateUpdated: true,
         }
       } else {
         let event = this.$store.getters.getEvent(this.eventId),
@@ -46,8 +47,18 @@
           notes: event.notes,
           type: event.type,
           animalId: event.animalId,
+          dateUpdated: false,
         }
       }
+    },
+
+    watch: {
+      date: {
+        deep: true,
+        handler() {
+          this.dateUpdated = true;
+        },
+      },
     },
 
     computed: {
@@ -78,7 +89,7 @@
     },
 
     methods: {
-      addEvent() {
+      submit() {
         let eventData = {
           animalId: this.animalId,
           type: this.type,
@@ -95,6 +106,14 @@
           this.$store.commit('updateEvent', eventData);
         }
 
+        if(eventData.type === 'Feeding' && this.dateUpdated) {
+          this.$store.commit('recalculateLastFed', this.animalId);
+        }
+
+        this.goBack();
+      },
+
+      goBack() {
         this.$navigateTo(AnimalDetails, {props: {animalId: this.animalId}})
       },
     },
@@ -105,7 +124,7 @@
   <Page class="page">
     <ActionBar class="action-bar">
       <GridLayout width="100%" columns="auto, *">
-        <Label class="icon" :text="String.fromCharCode(0xf2fa)" @tap="$navigateBack" col="0" />
+        <Label class="icon" :text="String.fromCharCode(0xf2fa)" @tap="goBack" col="0" />
         <Label class="title" :text="animalName"  col="1"/>
       </GridLayout>
     </ActionBar>
@@ -139,7 +158,7 @@
         </StackLayout>
       </ScrollView>
 
-      <Button class="btn btn-primary" :text="buttonText" flexShrink="0" @tap="addEvent" />
+      <Button class="btn btn-primary" :text="buttonText" flexShrink="0" @tap="submit" />
     </FlexboxLayout>
   </Page>
 </template>

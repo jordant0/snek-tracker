@@ -9,6 +9,7 @@ function setAnimalData(id, animalData) {
     id: id,
     name: animalData.name,
     species: animalData.species,
+    lastFed: animalData.lastFed || null,
   }
 
   if(animalData.birthdate) {
@@ -69,6 +70,40 @@ function setEventData(id, eventData) {
   return newEvent;
 };
 
+function sortEvents(eventA, eventB) {
+  if (eventA.date.year === eventB.date.year) {
+    if (eventA.date.month === eventB.date.month) {
+      if (eventA.date.day === eventB.date.day) {
+        if(eventA.time && eventB.time) {
+          if(eventA.time.hour === eventB.time.hour) {
+            return eventA.time.minute - eventB.time.minute;
+          }
+          else {
+            return eventA.time.hour - eventB.time.hour;
+          }
+        }
+        else {
+          if(eventB.time) {
+            return 1;
+          }
+          else {
+            return -1;
+          }
+        }
+      }
+      else {
+        return eventA.date.day - eventB.date.day;
+      }
+    }
+    else {
+      return eventA.date.month - eventB.date.month;
+    }
+  }
+  else {
+    return eventA.date.year - eventB.date.year;
+  }
+}
+
 const INITIAL_STATE = {
   animals: {
     0: {
@@ -126,37 +161,7 @@ const store = new Vuex.Store({
         let eventA = state.events[idA],
             eventB = state.events[idB];
 
-        if (eventA.date.year === eventB.date.year) {
-          if (eventA.date.month === eventB.date.month) {
-            if (eventA.date.day === eventB.date.day) {
-              if(eventA.time && eventB.time) {
-                if(eventA.time.hour === eventB.time.hour) {
-                  return eventA.time.minute - eventB.time.minute;
-                }
-                else {
-                  return eventA.time.hour - eventB.time.hour;
-                }
-              }
-              else {
-                if(eventB.time) {
-                  return 1;
-                }
-                else {
-                  return -1;
-                }
-              }
-            }
-            else {
-              return eventA.date.day - eventB.date.day;
-            }
-          }
-          else {
-            return eventA.date.month - eventB.date.month;
-          }
-        }
-        else {
-          return eventA.date.year - eventB.date.year;
-        }
+        return sortEvents(eventA, eventB);
       });
     },
   },
@@ -201,7 +206,21 @@ const store = new Vuex.Store({
     removeEvent(state, id) {
       Vue.delete(state.events, id);
     },
-  }
+
+    recalculateLastFed(state, animalId) {
+      let lastFed = null,
+          eventsList = Object.values(state.events).filter((event) => {
+            return event.date && event.animalId === animalId && event.type === 'Feeding';
+          }).sort((eventA, eventB) => {
+            return sortEvents(eventB, eventA);
+          });
+
+      if(eventsList.length) {
+        lastFed = Object.assign({}, eventsList[0].date);
+      }
+      Vue.set(state.animals[animalId], 'lastFed', lastFed);
+    },
+  },
 });
 
 Vue.prototype.$store = store;

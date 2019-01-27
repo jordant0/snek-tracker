@@ -100,6 +100,7 @@
               <Label v-if="animal.species" class="list-group-item-text" :text="animal.species" />
               <Label v-if="animal.birthdate" class="list-group-item-text" :text="`Birthdate: ${animal.birthdate.month + 1}/${animal.birthdate.day}/${animal.birthdate.year}`" />
               <Label v-if="animal.arrival" class="list-group-item-text" :text="`Arrived: ${animal.arrival.month + 1}/${animal.arrival.day}/${animal.arrival.year}`" />
+              <Label v-if="animal.lastFed" class="list-group-item-text" :text="`Last Fed: ${animal.lastFed.month + 1}/${animal.lastFed.day}/${animal.lastFed.year}`" />
             </StackLayout>
           </v-template>
 
