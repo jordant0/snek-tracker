@@ -3,51 +3,97 @@
 
   export default {
     props: {
-      animalId: {
+      eventAnimalId: {
         type: Number,
         default: 0,
       },
 
-      type: {
+      eventId: {
+        type: Number,
+        default: 0,
+      },
+
+      eventType: {
         type: String,
         default: 'Feeding',
       },
     },
 
     data() {
-      return {
-        date: new Date(),
-        time: new Date(),
-        value: null,
-        notes: '',
+      if(!this.eventId) {
+        return {
+          date: new Date(),
+          time: new Date(),
+          value: null,
+          notes: '',
+          type: this.eventType,
+          animalId: this.eventAnimalId,
+        }
+      } else {
+        let event = this.$store.getters.getEvent(this.eventId),
+            date = event.date || {},
+            time = new Date();
+
+        if(event.time) {
+          time.setHours(event.time.hour);
+          time.setMinutes(event.time.minute);
+        }
+
+        return {
+          date: new Date(date.year, date.month, date.day),
+          time,
+          value: event.value,
+          notes: event.notes,
+          type: event.type,
+          animalId: event.animalId,
+        }
       }
     },
 
     computed: {
+      newEvent() {
+        return !this.eventId;
+      },
+
       animal() {
         return this.$store.getters.getAnimal(this.animalId);
       },
 
+      buttonText() {
+        return this.newEvent ? 'Add' : 'Save';
+      },
+
+      action() {
+        return this.newEvent ? 'Add' : 'Edit';
+      },
+
       animalName() {
         if(this.animal && this.animal.name) {
-          return `Add ${this.type} Event for ${this.animal.name}`;
+          return `${this.action} ${this.type} Event for ${this.animal.name}`;
         }
         else {
-          return `Add ${this.type} Event`;
+          return `${this.action} ${this.type} Event`;
         }
       },
     },
 
     methods: {
       addEvent() {
-        this.$store.commit('addEvent', {
+        let eventData = {
           animalId: this.animalId,
           type: this.type,
           date: this.date,
           time: this.time,
           value: this.value,
           notes: this.notes,
-        });
+        };
+
+        if(this.newEvent) {
+          this.$store.commit('addEvent', eventData);
+        } else {
+          eventData.id = this.eventId;
+          this.$store.commit('updateEvent', eventData);
+        }
 
         this.$navigateTo(AnimalDetails, {props: {animalId: this.animalId}})
       },
@@ -82,7 +128,7 @@
             <TextField v-model="value" keyboardType="number" hint="In grams" />
           </StackLayout>
           <StackLayout v-else-if="type === 'Handling'" class="form-field" marginBottom="20">
-            <Label class="label" text="Time" />
+            <Label class="label" text="Duration" />
             <TextField v-model="value" keyboardType="number" hint="In minutes" />
           </StackLayout>
 
@@ -93,7 +139,7 @@
         </StackLayout>
       </ScrollView>
 
-      <Button class="btn btn-primary" text="Add" flexShrink="0" @tap="addEvent" />
+      <Button class="btn btn-primary" :text="buttonText" flexShrink="0" @tap="addEvent" />
     </FlexboxLayout>
   </Page>
 </template>

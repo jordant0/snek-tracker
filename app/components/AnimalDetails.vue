@@ -1,5 +1,5 @@
 <script>
-  import AddEvent from './AddEvent'
+  import EventForm from './EventForm'
   import EventsFilterModal from './EventsFilterModal'
   import { mapState, mapGetters } from 'vuex'
 
@@ -72,9 +72,9 @@
 
     methods: {
       addEvent(type) {
-        this.$navigateTo(AddEvent, {props: {
-          animalId: this.animalId,
-          type,
+        this.$navigateTo(EventForm, {props: {
+          eventAnimalId: this.animalId,
+          eventType: type,
         }})
       },
 
@@ -181,6 +181,32 @@
 
         return `${dateString}${timestamp} - ${details}`;
       },
+
+      onSwipeStarted ({ data, object }) {
+        const swipeLimits = data.swipeLimits;
+        const swipeView = object;
+        const leftItem = swipeView.getViewById('left-swipe');
+        const rightItem = swipeView.getViewById('right-swipe');
+        swipeLimits.left = leftItem.getMeasuredWidth();
+        swipeLimits.right = rightItem.getMeasuredWidth();
+        swipeLimits.threshold = leftItem.getMeasuredWidth() / 2;
+      },
+
+      editEvent({ object }) {
+        if(object.bindingContext >= 0) {
+          this.$navigateTo(EventForm, {props: { eventId: object.bindingContext }});
+        } else {
+          alert('Cannot edit default events');
+        }
+      },
+
+      deleteEvent({ object }) {
+        if(object.bindingContext >= 0) {
+          this.$store.commit('removeEvent', object.bindingContext);
+        } else {
+          alert('Cannot remove default events');
+        }
+      },
     },
   }
 </script>
@@ -230,7 +256,12 @@
       </StackLayout>
 
       <StackLayout ~mainContent>
-        <ListView for="id in eventIdsForAnimal" class="list-group">
+        <RadListView
+          for="id in eventIdsForAnimal"
+          class="list-group"
+          swipeActions="true"
+          @itemSwipeProgressStarted="onSwipeStarted"
+        >
           <v-template>
             <StackLayout class="list-group-item list-group-item--events" orientation="horizontal">
               <Label class="icon" :text="String.fromCharCode(eventIcon(id))" />
@@ -240,7 +271,18 @@
               </StackLayout>
             </StackLayout>
           </v-template>
-        </ListView>
+
+          <v-template name="itemswipe">
+            <GridLayout columns="auto, *, auto" backgroundColor="White">
+              <FlexboxLayout id="left-swipe" col="0" class="swipe-item left" @tap="editEvent">
+                <Label class="icon swipe-action" :text="String.fromCharCode(0xf158)" />
+              </FlexboxLayout>
+              <FlexboxLayout id="right-swipe" col="2" class="swipe-item right" @tap="deleteEvent">
+                <Label class="icon swipe-action" :text="String.fromCharCode(0xf154)" />
+              </FlexboxLayout>
+            </GridLayout>
+          </v-template>
+        </RadListView>
       </StackLayout>
     </RadSideDrawer>
   </Page>

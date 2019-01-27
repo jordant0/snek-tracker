@@ -117,6 +117,10 @@ const store = new Vuex.Store({
       return state.animals[id];
     },
 
+    getEvent: (state) => (id) => {
+      return state.events[id];
+    },
+
     sortedEventIds: state => {
       return Object.keys(state.events).sort((idB, idA) => {
         let eventA = state.events[idA],
