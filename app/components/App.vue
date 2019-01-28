@@ -1,9 +1,14 @@
 <script>
   import { mapGetters } from 'vuex'
   import AnimalForm from './AnimalForm'
+  import AnimalInfo from './AnimalInfo'
   import AnimalDetails from './AnimalDetails'
 
   export default {
+    components: {
+      AnimalInfo,
+    },
+
     data() {
       return {
         msg: 'Why!'
@@ -96,16 +101,7 @@
             @itemTap="viewAnimal"
           >
             <v-template>
-              <StackLayout class="list-group-item">
-                <Label class="list-group-item-heading" :text="animal.name" />
-                <Label v-if="animal.species" class="list-group-item-text" :text="animal.species" />
-
-                <Label v-if="animal.lastFed" class="list-group-item-text" :text="`Last Fed: ${animal.lastFed.month + 1}/${animal.lastFed.day}/${animal.lastFed.year}`" />
-                <Label v-else-if="animal.feedingDuration" class="list-group-item-text" :text="`Feeding every ${animal.feedingDuration} day(s)`" />
-
-                <Label v-if="animal.birthdate" class="list-group-item-text" :text="`Birthdate: ${animal.birthdate.month + 1}/${animal.birthdate.day}/${animal.birthdate.year}`" />
-                <Label v-if="animal.arrival" class="list-group-item-text" :text="`Arrived: ${animal.arrival.month + 1}/${animal.arrival.day}/${animal.arrival.year}`" />
-              </StackLayout>
+              <AnimalInfo :animal='animal' />
             </v-template>
 
             <v-template name="itemswipe">
