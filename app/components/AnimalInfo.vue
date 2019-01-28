@@ -26,17 +26,13 @@
 
         if(this.birthdate) {
           years = this.today.diff(this.birthdate, 'years');
-          months = this.today.diff(this.birthdate, 'months') % 12;
-
-          if(years) {
-            ageString.push(years == 1 ? '1 year' : `${years} years`);
+          if(years >= 1) {
+            return `${this.pluralize(years, 'year')} old`;
           }
-
-          if(months) {
-            ageString.push(months == 1 ? '1 month' : `${months} months`);
+          else {
+            months = this.today.diff(this.birthdate, 'months');
+            return `${this.pluralize(months, 'month')} old`;
           }
-
-          return `${ageString.join(' and ')} old`;
         }
         return null;
       },
@@ -61,12 +57,12 @@
 
       feedingInfo() {
         if(this.feedingDiff === 0) {
-          return { status: 'text-success', text: 'Today' }
+          return { status: 'text-success', text: 'Today!' }
         } else if(this.feedingDiff) {
           if(this.feedingDiff > 0) {
-            return { status: 'text-primary', text: `In ${this.feedingDiff} day(s)` }
+            return { status: 'text-primary', text: `In ${this.pluralize(this.feedingDiff, 'day')}` }
           } else {
-            return { status: 'text-danger', text: `${-this.feedingDiff} day(s) ago` }
+            return { status: 'text-danger', text: `${this.pluralize(-this.feedingDiff, 'day')} ago` }
           }
         }
         return null;
@@ -88,13 +84,22 @@
       dateDisplay(date) {
         return date.format('MMM DD YYYY');
       },
+
+      pluralize(count, noun) {
+        if(count === 1) {
+          return `${count} ${noun}`;
+        }
+        else {
+          return `${count} ${noun}s`;
+        }
+      },
     },
   }
 </script>
 
 <template>
   <StackLayout class="list-group-item">
-    <FlexboxLayout justifyContent="space-between">
+    <FlexboxLayout justifyContent="space-between" alignItems="center">
       <FlexboxLayout alignItems="center">
         <Label class="list-group-item-heading" :text="animal.name" />
         <Label v-if="animal.species" class="list-group-item-text" :text="`- ${animal.species}`" marginLeft="5" padding="0" />
@@ -107,7 +112,7 @@
     <StackLayout>
       <Label v-if="feedingInfo" :class="`list-group-item-text ${feedingInfo.status}`" :text="`Next Feeding: ${feedingInfo.text}`" />
       <Label v-else-if="animal.lastFed" class="list-group-item-text" :text="`Last Fed: ${dateDisplay(lastFed)}`" />
-      <Label v-else-if="animal.feedingDuration" class="list-group-item-text" :text="`Feeding every ${animal.feedingDuration} day(s)`" />
+      <Label v-else-if="animal.feedingDuration" class="list-group-item-text" :text="`Feeding every ${pluralize(animal.feedingDuration, 'day')}`" />
     </StackLayout>
   </StackLayout>
 </template>

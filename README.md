@@ -1,4 +1,4 @@
-# Snek Tracker
+# Herps Tracker
 
 > Reptile tracking app
 
