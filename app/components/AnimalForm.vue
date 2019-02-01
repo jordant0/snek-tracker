@@ -1,6 +1,4 @@
 <script>
-  import App from './App'
-
   export default {
     props: {
       animalId: {
@@ -69,7 +67,7 @@
       },
 
       goBack() {
-        this.$navigateTo(App)
+        this.$navigateBack();
       },
     },
   }

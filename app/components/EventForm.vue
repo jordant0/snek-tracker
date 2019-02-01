@@ -1,6 +1,4 @@
 <script>
-  import AnimalDetails from './AnimalDetails'
-
   export default {
     props: {
       eventAnimalId: {
@@ -114,7 +112,7 @@
       },
 
       goBack() {
-        this.$navigateTo(AnimalDetails, {props: {animalId: this.animalId}})
+        this.$navigateBack();
       },
     },
   }

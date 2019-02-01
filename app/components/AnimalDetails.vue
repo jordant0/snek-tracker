@@ -1,7 +1,6 @@
 <script>
   import EventForm from './EventForm'
   import EventsFilterModal from './EventsFilterModal'
-  import App from './App'
   import { mapState, mapGetters } from 'vuex'
 
   export default {
@@ -215,7 +214,7 @@
       },
 
       goBack() {
-        this.$navigateTo(App);
+        this.$navigateBack();
       },
     },
   }
