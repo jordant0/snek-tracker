@@ -15,6 +15,7 @@
           species: '',
           arrival: new Date(),
           feedingDuration: null,
+          lastFed: null,
         }
       } else {
         let animal = this.$store.getters.getAnimal(this.animalId),
@@ -27,6 +28,7 @@
           species: animal.species,
           arrival: new Date(arrival.year, arrival.month, arrival.day),
           feedingDuration: animal.feedingDuration,
+          lastFed: animal.lastFed,
         }
       }
     },
@@ -53,6 +55,7 @@
           species: this.species,
           arrival: this.arrival,
           feedingDuration: this.feedingDuration,
+          lastFed: this.lastFed,
         };
 
         if(this.newAnimal) {
