@@ -1,5 +1,5 @@
 import Vue from 'nativescript-vue'
-import App from './components/App'
+import Login from './components/Login'
 import VueDevtools from 'nativescript-vue-devtools'
 import store from './store/index'
 import * as ApplicationSettings from "application-settings"
@@ -19,6 +19,20 @@ Vue.config.silent = (TNS_ENV === 'production')
 Vue.use(RadListView);
 Vue.registerElement('RadSideDrawer', () => require('nativescript-ui-sidedrawer').RadSideDrawer)
 
+var firebase = require("nativescript-plugin-firebase");
+firebase
+.init({})
+.then(
+  function(instance) {
+    console.log("firebase.init done");
+  },
+  function(error) {
+    console.log("firebase.init error: " + error);
+  }
+);
+
+Vue.prototype.$firebase = firebase;
+
 new Vue({
   store,
 
@@ -32,5 +46,5 @@ new Vue({
     });
   },
 
-  render: h => h('frame', [h(App)])
+  render: h => h('frame', [h(Login)])
 }).$start()
