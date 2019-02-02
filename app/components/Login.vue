@@ -1,5 +1,6 @@
 <script>
   import Home from './Home'
+  import { mapState } from "vuex"
   var LoadingIndicator = require("nativescript-loading-indicator").LoadingIndicator;
 
   var loader = new LoadingIndicator();
@@ -8,6 +9,7 @@
   export default {
     data() {
       return {
+        isInitialized: false,
         isLoggingIn: true,
         user: {
           email: '',
@@ -16,10 +18,46 @@
         }
       };
     },
+
+    watch: {
+      isLoggedIn() {
+        this.checkIsLogin();
+      }
+    },
+
+    created() {
+      setTimeout(() => {
+        this.checkIsLogin();
+      }, 1500);
+    },
+
+    computed: {
+      ...mapState([
+        'isLoggedIn'
+      ]),
+
+      classNames() {
+        return {
+          'login-form': true,
+          "container-loading": this.isInitialized,
+          "container-loaded": !this.isInitialized
+        };
+      },
+    },
+
     methods: {
+      checkIsLogin() {
+        if (this.isLoggedIn) {
+          this.$navigateTo(Home, { clearHistory: true });
+        } else {
+          this.isInitialized = true;
+        }
+      },
+
       toggleForm() {
         this.isLoggingIn = !this.isLoggingIn;
       },
+
       submit() {
         if (!this.user.email || !this.user.password) {
           this.alert("Please provide both an email address and password.");
@@ -32,23 +70,20 @@
           this.register();
         }
       },
+
       login() {
-        this.$firebase.login({
-          type: this.$firebase.LoginType.PASSWORD,
-          passwordOptions: {
-            email: this.user.email,
-            password: this.user.password
-          }
-        })
+        this.$authService.login(this.user)
         .then(() => {
           loader.hide();
-          this.$navigateTo(Home);
+          this.$store.commit('setIsLoggedIn', true)
         })
-        .catch(() => {
+        .catch(err => {
+          console.error(err);
           loader.hide();
-          this.alert("Unfortunately we could not find your account.");
+          this.alert(err);
         });
       },
+
       register() {
         if (!validator.validate(this.user.email)) {
           loader.hide();
@@ -68,20 +103,19 @@
           return;
         }
 
-        this.$firebase.createUser({
-          email: this.user.email,
-          password: this.user.password
-        })
+        this.$authService.register(this.user)
         .then(() => {
           loader.hide();
           this.alert("Your account was successfully created.");
           this.isLoggingIn = true;
         })
-        .catch(() => {
+        .catch(err => {
+          console.error(err);
           loader.hide();
-          this.alert("Unfortunately we were unable to create your account.");
+          this.alert(err);
         });
       },
+
       forgotPassword() {
         prompt({
           title: "Forgot Password",
@@ -94,20 +128,17 @@
         }).then(data => {
           if (data.result) {
             loader.show();
-            this.$firebase.resetPassword({
-              email: data.text.trim()
-            })
+
+            this.$authService.resetPassword(data.text.trim())
             .then(() => {
               loader.hide();
               this.alert(
                 "Your password was successfully reset. Please check your email for instructions on choosing a new password."
               );
             })
-            .catch(() => {
+            .catch(err => {
               loader.hide();
-              this.alert(
-                "Unfortunately, an error occurred resetting your password."
-              );
+              this.alert(err);
             });
           }
         });
@@ -131,62 +162,67 @@
 </script>
 
 <template>
-	<Page class="page">
+  <Page class="page">
     <ActionBar class="action-bar">
       <GridLayout width="100%" columns="10, *">
         <Label class="title" text="Login"  col="1"/>
       </GridLayout>
     </ActionBar>
 
-		<FlexboxLayout flexDirection="column" alignItems="center" justifyContent="space-between">
-			<StackLayout class="login-form" width="100%">
-				<Image class="logo" src="~/images/logo.png" />
+    <FlexboxLayout flexDirection="column" alignItems="center" justifyContent="space-between">
+      <StackLayout :class="classNames" width="100%">
+        <Image class="logo" src="~/images/logo.png" />
 
-				<StackLayout class="input-field" marginBottom="25">
-					<TextField
-            class="input"
-            hint="Email"
-            keyboardType="email"
-            autocorrect="false"
-            autocapitalizationType="none"
-            v-model="user.email"
-  					returnKeyType="next"
-            @returnPress="focusPassword"
-          />
-					<StackLayout class="hr-light" />
-				</StackLayout>
+        <StackLayout v-show="!isInitialized">
+          <ActivityIndicator  busy="true" class="activity-indicator"/>
+        </StackLayout>
+        <StackLayout v-show="isInitialized">
+          <StackLayout class="input-field" marginBottom="25">
+  					<TextField
+              class="input"
+              hint="Email"
+              keyboardType="email"
+              autocorrect="false"
+              autocapitalizationType="none"
+              v-model="user.email"
+    					returnKeyType="next"
+              @returnPress="focusPassword"
+            />
+  					<StackLayout class="hr-light" />
+  				</StackLayout>
 
-				<StackLayout class="input-field" marginBottom="25">
-					<TextField
-            ref="password"
-            class="input"
-            hint="Password"
-            secure="true"
-            v-model="user.password"
-            :returnKeyType="isLoggingIn ? 'done' : 'next'"
-  					@returnPress="focusConfirmPassword"
-          />
-				</StackLayout>
+  				<StackLayout class="input-field" marginBottom="25">
+  					<TextField
+              ref="password"
+              class="input"
+              hint="Password"
+              secure="true"
+              v-model="user.password"
+              :returnKeyType="isLoggingIn ? 'done' : 'next'"
+    					@returnPress="focusConfirmPassword"
+            />
+  				</StackLayout>
 
-				<StackLayout v-show="!isLoggingIn" class="input-field" marginBottom="25">
-					<TextField
-            ref="confirmPassword"
-            class="input"
-            hint="Confirm password"
-            secure="true"
-            v-model="user.confirmPassword"
-            returnKeyType="done"
-					/>
-				</StackLayout>
+  				<StackLayout v-show="!isLoggingIn" class="input-field" marginBottom="25">
+  					<TextField
+              ref="confirmPassword"
+              class="input"
+              hint="Confirm password"
+              secure="true"
+              v-model="user.confirmPassword"
+              returnKeyType="done"
+  					/>
+  				</StackLayout>
 
-				<Button :text="isLoggingIn ? 'Log In' : 'Sign Up'" @tap="submit" class="btn btn-primary m-t-20" />
+  				<Button :text="isLoggingIn ? 'Log In' : 'Sign Up'" @tap="submit" class="btn btn-primary m-t-20" />
 
-        <FlexboxLayout marginTop="30" justifyContent="center">
-          <Label v-show="isLoggingIn" text="Forgot your password?" class="login-label" @tap="forgotPassword" />
-        </FlexboxLayout>
-			</StackLayout>
+          <FlexboxLayout marginTop="30" justifyContent="center">
+            <Label v-show="isLoggingIn" text="Forgot your password?" class="login-label" @tap="forgotPassword" />
+          </FlexboxLayout>
+        </StackLayout>
+      </StackLayout>
 
-      <StackLayout padding="30">
+      <StackLayout v-show="isInitialized" padding="30">
         <Label class="login-label" @tap="toggleForm">
           <FormattedString>
             <Span :text="isLoggingIn ? 'Don’t have an account? ' : 'Back to Login'" />
@@ -194,6 +230,38 @@
           </FormattedString>
         </Label>
       </StackLayout>
-		</FlexboxLayout>
-	</Page>
+    </FlexboxLayout>
+  </Page>
 </template>
+
+<style scoped>
+.container-loading {
+  animation-name: loading;
+  animation-fill-mode: forwards;
+  animation-duration: 0.6;
+  animation-iteration-count: 1;
+}
+@keyframes loading {
+  0% {
+    transform: translate(0, 200);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+.container-loaded {
+  animation-name: loaded;
+  animation-fill-mode: forwards;
+  animation-duration: 0.6;
+  animation-iteration-count: 1;
+}
+
+@keyframes loaded {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(0, 200);
+  }
+}
+</style>

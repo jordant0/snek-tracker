@@ -1,8 +1,9 @@
 <script>
-  import { mapGetters } from 'vuex'
+  import { mapState, mapGetters } from 'vuex'
   import AnimalForm from './AnimalForm'
   import AnimalInfo from './AnimalInfo'
   import AnimalDetails from './AnimalDetails'
+  import Login from './Login'
 
   export default {
     components: {
@@ -15,7 +16,19 @@
       }
     },
 
+    watch: {
+      isLoggedIn() {
+        if (!this.isLoggedIn) {
+          this.$navigateTo(Login, { clearHistory: true });
+        }
+      }
+    },
+
     computed: {
+      ...mapState([
+        'isLoggedIn'
+      ]),
+
       ...mapGetters([
         'animalsList'
       ])
@@ -60,6 +73,10 @@
       deleteAnimal({ object }) {
         this.$store.commit('removeAnimal', object.bindingContext.id);
       },
+
+      logout() {
+        this.$authService.logout()
+      }
     },
   }
 </script>
@@ -79,9 +96,9 @@
         <StackLayout>
           <Label class="sidedrawer-header" text="Menu"/>
 
-          <StackLayout class="sidedrawer-list-item" orientation="horizontal" @tap="addAnimal">
-            <Label class="icon" :text="String.fromCharCode(0xf1ff)" />
-            <Label class="title" text="Add Animal" />
+          <StackLayout class="sidedrawer-list-item" orientation="horizontal" @tap="logout">
+            <Label class="icon" :text="String.fromCharCode(0xf193)" />
+            <Label class="title" text="Logout" />
           </StackLayout>
         </StackLayout>
 

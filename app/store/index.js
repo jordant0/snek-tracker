@@ -110,6 +110,7 @@ const INITIAL_STATE = {
   nextAnimalId: 1,
   events: {},
   nextEventId: 1,
+  isLoggedIn: null,
 }
 
 const store = new Vuex.Store({
@@ -139,6 +140,10 @@ const store = new Vuex.Store({
   },
 
   mutations: {
+    setIsLoggedIn(state, value) {
+      Vue.set(state, 'isLoggedIn', value);
+    },
+
     load(state) {
       if(ApplicationSettings.getString("store")) {
         this.replaceState(

@@ -4,11 +4,20 @@ import VueDevtools from 'nativescript-vue-devtools'
 import store from './store/index'
 import * as ApplicationSettings from "application-settings"
 import Vuex from 'vuex'
-import RadListView from 'nativescript-ui-listview/vue';
+import RadListView from 'nativescript-ui-listview/vue'
+import firebase from "nativescript-plugin-firebase"
+import BackendService from './services/BackendService'
+import AuthService from './services/AuthService'
 
 import './app.scss'
 
 Vue.use(Vuex)
+
+export const backendService = new BackendService()
+export const authService = new AuthService()
+
+Vue.prototype.$authService = authService
+Vue.prototype.$backendService = backendService
 
 if(TNS_ENV !== 'production') {
   Vue.use(VueDevtools, { host: '192.168.1.116' })
@@ -19,9 +28,20 @@ Vue.config.silent = (TNS_ENV === 'production')
 Vue.use(RadListView);
 Vue.registerElement('RadSideDrawer', () => require('nativescript-ui-sidedrawer').RadSideDrawer)
 
-var firebase = require("nativescript-plugin-firebase");
 firebase
-.init({})
+.init({
+  onAuthStateChanged: data => {
+    console.log((data.loggedIn ? "Logged in to firebase" : "Logged out from firebase") + " (firebase.init() onAuthStateChanged callback)");
+    if (data.loggedIn) {
+      backendService.token = data.user.uid
+      console.log("uID: " + data.user.uid)
+      store.commit('setIsLoggedIn', true)
+    }
+    else {
+      store.commit('setIsLoggedIn', false)
+    }
+  }
+})
 .then(
   function(instance) {
     console.log("firebase.init done");
