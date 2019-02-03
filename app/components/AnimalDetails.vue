@@ -16,17 +16,6 @@
       },
     },
 
-    created() {
-      this.filters = {
-        0: 'All',
-        1: 'Feeding',
-        2: 'Handling',
-        3: 'Weight',
-        4: 'Shedding',
-        5: 'Other',
-      }
-    },
-
     data() {
       return {
         eventsList: [],
@@ -36,6 +25,15 @@
     },
 
     created() {
+      this.filters = {
+        0: 'All',
+        1: 'Feeding',
+        2: 'Handling',
+        3: 'Weight',
+        4: 'Shedding',
+        5: 'Other',
+      }
+
       this.$database.getAnimalData(this.uid, this.animalId)
       .then(doc => {
         this.animal = doc.data();
@@ -47,12 +45,7 @@
         this.alert(err);
       });
 
-      this.$database.eventsCollection(this.uid, this.animalId).orderBy('timestamp', 'desc').onSnapshot(snapshot => {
-        this.eventsList = [];
-        snapshot.forEach(doc => {
-          this.eventsList.push(Object.assign({id: doc.id}, doc.data()));
-        });
-      });
+      this.collectionSubscriber = this.loadCollection();
     },
 
     computed: {
@@ -95,6 +88,19 @@
     },
 
     methods: {
+      loadCollection(object) {
+        return this.$database.eventsCollection(this.uid, this.animalId).orderBy('timestamp', 'desc').onSnapshot(snapshot => {
+          this.eventsList = [];
+          snapshot.forEach(doc => {
+            this.eventsList.push(Object.assign({id: doc.id}, doc.data()));
+          });
+
+          if(object) {
+            object.notifyPullToRefreshFinished();
+          }
+        });
+      },
+
       addEvent(type) {
         this.$navigateTo(EventForm, {props: {
           animalId: this.animalId,
@@ -143,6 +149,11 @@
 
       goBack() {
         this.$navigateBack();
+      },
+
+      refreshData({ object }) {
+        this.collectionSubscriber();
+        this.collectionSubscriber = this.loadCollection(object);
       },
     },
   }
@@ -199,6 +210,8 @@
             class="list-group"
             swipeActions="true"
             @itemSwipeProgressStarted="onSwipeStarted"
+            pullToRefresh="true"
+            @pullToRefreshInitiated="refreshData"
           >
             <v-template>
               <EventInfo :event='event' :animalName='animal.name' />
