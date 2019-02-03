@@ -1,4 +1,5 @@
 <script>
+  import { mapState } from 'vuex'
   const moment = require("moment")
 
   export default {
@@ -12,10 +13,32 @@
     data() {
       return {
         today: moment(0, 'HH'),
+        lastFedTimestamp: null,
       };
     },
 
+    watch: {
+      lastFed() {
+        this.today.set({
+          'hour': this.lastFed.hour(),
+          'minute': this.lastFed.minute(),
+        });
+      },
+    },
+
+    created() {
+      this.$database.eventsCollection(this.uid, this.animal.id).where("type", "==", "Feeding").orderBy("timestamp", "desc").limit(1).onSnapshot(snapshot => {
+        snapshot.forEach(doc => {
+          this.lastFedTimestamp = doc.data().timestamp;
+        });
+      });
+    },
+
     computed: {
+      ...mapState([
+        'uid',
+      ]),
+
       birthdate() {
         return this.processDate(this.animal.birthdate);
       },
@@ -38,7 +61,7 @@
       },
 
       lastFed() {
-        return this.processDate(this.animal.lastFed);
+        return this.processDate(this.lastFedTimestamp);
       },
 
       nextFeed() {
@@ -72,13 +95,9 @@
     methods: {
       processDate(date) {
         if(date) {
-          return moment(this.dateString(date));
+          return moment(date);
         }
         return null;
-      },
-
-      dateString(date) {
-        return `${date.year}-${date.month + 1}-${date.day}`
       },
 
       dateDisplay(date) {

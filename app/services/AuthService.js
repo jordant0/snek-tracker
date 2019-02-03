@@ -4,10 +4,11 @@ import { backendService } from "../main";
 
 export default class AuthService extends BackendService {
   async register(user) {
-    return await firebase.createUser({
+    const createdUser = await firebase.createUser({
       email: user.email,
       password: user.password
-    });
+    })
+    return await firebase.firestore.set("users", createdUser.uid, {});
   }
 
   async login(user) {

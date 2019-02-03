@@ -1,5 +1,5 @@
 <script>
-  import { mapState, mapGetters } from 'vuex'
+  import { mapState } from 'vuex'
   import AnimalForm from './AnimalForm'
   import AnimalInfo from './AnimalInfo'
   import AnimalDetails from './AnimalDetails'
@@ -12,7 +12,7 @@
 
     data() {
       return {
-        msg: 'Why!'
+        animalsList: [],
       }
     },
 
@@ -24,17 +24,37 @@
       }
     },
 
+    created() {
+      this.collectionSubscriber = this.loadCollection();
+    },
+
     computed: {
       ...mapState([
-        'isLoggedIn'
+        'isLoggedIn',
+        'uid',
       ]),
-
-      ...mapGetters([
-        'animalsList'
-      ])
     },
 
     methods: {
+      loadCollection(object) {
+        return this.$database.animalsCollection(this.uid).onSnapshot(snapshot => {
+          this.animalsList = [];
+          snapshot.forEach(doc => {
+            this.animalsList.push(Object.assign({id: doc.id}, doc.data()));
+          });
+          if(object) {
+            object.notifyPullToRefreshFinished();
+          }
+        });
+      },
+
+      alert(message) {
+        return alert({
+          okButtonText: "OK",
+          message: message
+        });
+      },
+
       addAnimal() {
         this.$navigateTo(AnimalForm)
       },
@@ -46,7 +66,7 @@
           okButtonText: 'Reset',
           cancelButtonText: 'Cancel'
         }).then(result => {
-          this.$store.commit('reset');
+          this.$database.resetUserData(this.uid);
         });
       },
 
@@ -71,12 +91,17 @@
       },
 
       deleteAnimal({ object }) {
-        this.$store.commit('removeAnimal', object.bindingContext.id);
+        this.$database.deleteAnimal(this.uid, object.bindingContext.id);
       },
 
       logout() {
         this.$authService.logout()
-      }
+      },
+
+      refreshData({ object }) {
+        this.collectionSubscriber();
+        this.collectionSubscriber = this.loadCollection(object);
+      },
     },
   }
 </script>
@@ -114,6 +139,8 @@
             for="animal in animalsList"
             class="list-group"
             swipeActions="true"
+            pullToRefresh="true"
+            @pullToRefreshInitiated="refreshData"
             @itemSwipeProgressStarted="onSwipeStarted"
             @itemTap="viewAnimal"
           >

@@ -1,14 +1,16 @@
 <script>
+  import { mapState } from 'vuex'
+
   export default {
     props: {
-      eventAnimalId: {
-        type: Number,
-        default: 0,
+      animalId: {
+        type: String,
+        default: '0',
       },
 
       eventId: {
-        type: Number,
-        default: 0,
+        type: String,
+        default: null,
       },
 
       eventType: {
@@ -18,54 +20,54 @@
     },
 
     data() {
-      if(!this.eventId) {
-        return {
-          date: new Date(),
-          time: new Date(),
+      return {
+        event: {
+          timestamp: new Date(),
           value: null,
           notes: '',
           type: this.eventType,
-          animalId: this.eventAnimalId,
-          dateUpdated: true,
-        }
-      } else {
-        let event = this.$store.getters.getEvent(this.eventId),
-            date = event.date || {},
-            time = new Date();
-
-        if(event.time) {
-          time.setHours(event.time.hour);
-          time.setMinutes(event.time.minute);
-        }
-
-        return {
-          date: new Date(date.year, date.month, date.day),
-          time,
-          value: event.value,
-          notes: event.notes,
-          type: event.type,
-          animalId: event.animalId,
-          dateUpdated: false,
-        }
+        },
+        tempTime: new Date(),
+        oldTimestamp: null,
+        animal: {},
       }
     },
 
-    watch: {
-      date: {
-        deep: true,
-        handler() {
-          this.dateUpdated = true;
-        },
-      },
+    created() {
+      if(this.eventId) {
+        this.$database.getEventData(this.uid, this.animalId, this.eventId)
+        .then(doc => {
+          this.event = doc.data();
+          this.event.timestamp = new Date(this.event.timestamp);
+          let newTime = new Date();
+          newTime.setHours(this.event.timestamp.getHours());
+          newTime.setMinutes(this.event.timestamp.getMinutes());
+          this.tempTime = newTime;
+          this.oldTimestamp = new Date(this.event.timestamp);
+        })
+        .catch(err => {
+          console.error(err);
+          this.alert(err);
+        });
+      }
+
+      this.$database.getAnimalData(this.uid, this.animalId)
+      .then(doc => {
+        this.animal = doc.data();
+      })
+      .catch(err => {
+        console.error(err);
+        this.alert(err);
+      });
     },
 
     computed: {
+      ...mapState([
+        'uid',
+      ]),
+
       newEvent() {
         return !this.eventId;
-      },
-
-      animal() {
-        return this.$store.getters.getAnimal(this.animalId);
       },
 
       buttonText() {
@@ -78,37 +80,44 @@
 
       animalName() {
         if(this.animal && this.animal.name) {
-          return `${this.action} ${this.type} Event for ${this.animal.name}`;
+          return `${this.action} ${this.event.type} Event for ${this.animal.name}`;
         }
         else {
-          return `${this.action} ${this.type} Event`;
+          return `${this.action} ${this.event.type} Event`;
         }
       },
     },
 
     methods: {
+      updateTime() {
+        this.event.timestamp.setHours(this.tempTime.getHours())
+        this.event.timestamp.setMinutes(this.tempTime.getMinutes())
+      },
+
       submit() {
-        let eventData = {
-          animalId: this.animalId,
-          type: this.type,
-          date: this.date,
-          time: this.time,
-          value: this.value,
-          notes: this.notes,
-        };
+        this.updateTime();
 
         if(this.newEvent) {
-          this.$store.commit('addEvent', eventData);
-        } else {
-          eventData.id = this.eventId;
-          this.$store.commit('updateEvent', eventData);
+          this.$database.addEvent(this.uid, this.animalId, this.event)
+          .then(documentRef  => {
+            console.log(`Added event with ID ${documentRef.id}`);
+            this.goBack();
+          })
+          .catch(err => {
+            console.error(err);
+            this.alert(err);
+          });
         }
-
-        if(eventData.type === 'Feeding' && this.dateUpdated) {
-          this.$store.commit('recalculateLastFed', this.animalId);
+        else {
+          this.$database.updateEvent(this.uid, this.animalId, this.eventId, this.event)
+          .then(() => {
+            this.goBack();
+          })
+          .catch(err => {
+            console.error(err);
+            this.alert(err);
+          });
         }
-
-        this.goBack();
       },
 
       goBack() {
@@ -132,26 +141,26 @@
         <StackLayout>
           <StackLayout class="form-field">
             <Label class="label" text="Date" />
-            <DatePicker v-model="date" />
+            <DatePicker v-model="event.timestamp" />
           </StackLayout>
 
           <StackLayout class="form-field">
             <Label class="label" text="Time" />
-            <TimePicker v-model="time" />
+            <TimePicker v-model="tempTime" />
           </StackLayout>
 
-          <StackLayout v-if="type === 'Weight'" class="form-field" marginBottom="20">
+          <StackLayout v-if="event.type === 'Weight'" class="form-field" marginBottom="20">
             <Label class="label" text="Weight" />
-            <TextField v-model="value" keyboardType="number" hint="In grams" />
+            <TextField v-model="event.value" keyboardType="number" hint="In grams" />
           </StackLayout>
-          <StackLayout v-else-if="type === 'Handling'" class="form-field" marginBottom="20">
+          <StackLayout v-else-if="event.type === 'Handling'" class="form-field" marginBottom="20">
             <Label class="label" text="Duration" />
-            <TextField v-model="value" keyboardType="number" hint="In minutes" />
+            <TextField v-model="event.value" keyboardType="number" hint="In minutes" />
           </StackLayout>
 
           <StackLayout class="form-field" marginBottom="20">
             <Label class="label" text="Notes" />
-            <TextField v-model="notes" hint="Notes..." />
+            <TextField v-model="event.notes" hint="Notes..." />
           </StackLayout>
         </StackLayout>
       </ScrollView>

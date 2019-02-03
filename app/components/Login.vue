@@ -22,7 +22,13 @@
     watch: {
       isLoggedIn() {
         this.checkIsLogin();
-      }
+      },
+
+      dataLoaded() {
+        if(this.dataLoaded) {
+          this.$navigateTo(Home, { clearHistory: true });
+        }
+      },
     },
 
     created() {
@@ -33,7 +39,8 @@
 
     computed: {
       ...mapState([
-        'isLoggedIn'
+        'isLoggedIn',
+        'dataLoaded',
       ]),
 
       classNames() {
@@ -48,7 +55,7 @@
     methods: {
       checkIsLogin() {
         if (this.isLoggedIn) {
-          this.$navigateTo(Home, { clearHistory: true });
+          this.$database.getUserData();
         } else {
           this.isInitialized = true;
         }

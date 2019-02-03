@@ -1,13 +1,18 @@
 <script>
   import EventForm from './EventForm'
   import EventsFilterModal from './EventsFilterModal'
-  import { mapState, mapGetters } from 'vuex'
+  import EventInfo from './EventInfo'
+  import { mapState } from 'vuex'
 
   export default {
+    components: {
+      EventInfo,
+    },
+
     props: {
       animalId: {
-        type: Number,
-        default: 0,
+        type: String,
+        default: null,
       },
     },
 
@@ -24,17 +29,35 @@
 
     data() {
       return {
+        eventsList: [],
+        animal: {},
         filter: 0,
       }
     },
 
+    created() {
+      this.$database.getAnimalData(this.uid, this.animalId)
+      .then(doc => {
+        this.animal = doc.data();
+        this.animal.birthdate = new Date(this.animal.birthdate);
+        this.animal.arrival = new Date(this.animal.arrival);
+      })
+      .catch(err => {
+        console.error(err);
+        this.alert(err);
+      });
+
+      this.$database.eventsCollection(this.uid, this.animalId).orderBy('timestamp', 'desc').onSnapshot(snapshot => {
+        this.eventsList = [];
+        snapshot.forEach(doc => {
+          this.eventsList.push(Object.assign({id: doc.id}, doc.data()));
+        });
+      });
+    },
+
     computed: {
       ...mapState([
-        'events'
-      ]),
-
-      ...mapGetters([
-        'sortedEventIds',
+        'uid',
       ]),
 
       fitlerValue() {
@@ -46,34 +69,35 @@
         }
       },
 
-      eventIdsForAnimal() {
-        let ids = this.sortedEventIds.filter((eventId) => {
-          let event = this.events[eventId];
-          return event && event.animalId === this.animalId && (!this.fitlerValue || event.type === this.fitlerValue);
+      filteredEventsList() {
+        let events = this.eventsList.filter((event) => {
+          return event && (!this.fitlerValue || event.type === this.fitlerValue);
         });
 
-        if((!this.fitlerValue || this.fitlerValue === 'Other') && this.animal) {
+        if(!this.fitlerValue || this.fitlerValue === 'Other') {
           if(this.animal.arrival) {
-            ids.push(-1)
+            events.push({
+              id: -1,
+              timestamp: this.animal.arrival,
+            })
           }
 
           if(this.animal.birthdate) {
-            ids.push(-2)
+            events.push({
+              id: -2,
+              timestamp: this.animal.birthdate,
+            })
           }
         }
 
-        return ids;
-      },
-
-      animal() {
-        return this.$store.getters.getAnimal(this.animalId);
+        return events;
       },
     },
 
     methods: {
       addEvent(type) {
         this.$navigateTo(EventForm, {props: {
-          eventAnimalId: this.animalId,
+          animalId: this.animalId,
           eventType: type,
         }})
       },
@@ -83,103 +107,6 @@
         .then((selected) => {
           this.filter = selected;
         });
-      },
-
-      eventIcon(id) {
-        if(id === -1) {
-          return 0xf175;
-        }
-        else if(id === -2) {
-          return 0xf122;
-        }
-
-        let event = this.events[id];
-
-        if(!event) {
-          return 0xf27d;
-        }
-
-        switch(event.type) {
-          case 'Feeding':
-            return 0xf153;
-          case 'Handling':
-            return 0xf207;
-          case 'Weight':
-            return 0xf1bb;
-          case 'Shedding':
-            return 0xf254;
-          case 'Maintenance':
-            return 0xf1ed;
-          default:
-            return 0xf27d;
-        }
-      },
-
-      eventNotes(id) {
-        let event = this.events[id];
-
-        if(!event) {
-          return null;
-        }
-
-        return event.notes;
-      },
-
-      eventDisplay(id) {
-        let dateString, timestamp, details, hour, minute, suffix, date, time, event,
-            animalName = this.animal.name;
-
-
-        if(id === -1) {
-          details = `${animalName}'s arrival`;
-          date = this.animal.arrival;
-        }
-        else if(id === -2) {
-          details = `${animalName}'s birthdate`;
-          date = this.animal.birthdate;
-        }
-        else {
-          event = this.events[id];
-          if(!event) {
-            return '';
-          }
-
-          date = event.date;
-          time = event.time;
-          switch(event.type) {
-            case 'Feeding':
-              details = `Fed ${animalName}`
-              break;
-            case 'Handling':
-              details = `Handled ${animalName} for ${event.value} minutes`
-              break;
-            case 'Weight':
-              details = `Weighed ${animalName}: ${event.value}g`
-              break;
-            case 'Shedding':
-              details = `${animalName} shed`
-              break;
-            case 'Maintenance':
-              details = `Maintenance for ${animalName}`
-              break;
-            default:
-              details = `${animalName}`
-          }
-        }
-
-        dateString = `${date.month + 1}/${date.day}/${date.year % 1000}`;
-
-        if(time) {
-          hour = time.hour <= 12 ? time.hour : time.hour -12;
-          minute = time.minute < 10 ? `0${time.minute}` : time.minute;
-          suffix = time.hour < 12 ? 'am' : 'pm';
-          timestamp = ` ${hour}:${minute} ${suffix}`;
-        }
-        else {
-          timestamp = '';
-        }
-
-        return `${dateString}${timestamp} - ${details}`;
       },
 
       onSwipeStarted ({ data, object }) {
@@ -193,23 +120,24 @@
       },
 
       editEvent({ object }) {
-        if(object.bindingContext >= 0) {
-          this.$navigateTo(EventForm, {props: { eventId: object.bindingContext }});
-        } else {
+        let event = object.bindingContext;
+        if(event.id === -1 || event.id === -2) {
           alert('Cannot edit default events');
+        } else {
+          this.$navigateTo(EventForm, {props: {
+            eventId: event.id,
+            animalId: this.animalId,
+            eventType: event.type,
+          }});
         }
       },
 
       deleteEvent({ object }) {
-        if(object.bindingContext >= 0) {
-          let event = this.events[object.bindingContext];
-          this.$store.commit('removeEvent', object.bindingContext);
-
-          if(event && event.type === 'Feeding') {
-            this.$store.commit('recalculateLastFed', event.animalId);
-          }
-        } else {
+        let event = object.bindingContext;
+        if(event.id === -1 || event.id === -2) {
           alert('Cannot remove default events');
+        } else {
+          this.$database.deleteEvent(this.uid, this.animalId, event.id);
         }
       },
 
@@ -265,21 +193,15 @@
       </StackLayout>
 
       <StackLayout ~mainContent>
-        <StackLayout v-if="eventIdsForAnimal.length">
+        <StackLayout v-if="filteredEventsList.length">
           <RadListView
-            for="id in eventIdsForAnimal"
+            for="event in filteredEventsList"
             class="list-group"
             swipeActions="true"
             @itemSwipeProgressStarted="onSwipeStarted"
           >
             <v-template>
-              <StackLayout class="list-group-item list-group-item--events" orientation="horizontal">
-                <Label class="icon" :text="String.fromCharCode(eventIcon(id))" />
-                <StackLayout>
-                  <Label :text="eventDisplay(id)" />
-                  <Label v-if="eventNotes(id)" class="list-group-item-text" :text="eventNotes(id)" />
-                </StackLayout>
-              </StackLayout>
+              <EventInfo :event='event' :animalName='animal.name' />
             </v-template>
 
             <v-template name="itemswipe">

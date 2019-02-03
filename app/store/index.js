@@ -1,5 +1,6 @@
 import Vue from 'nativescript-vue';
 import Vuex from 'vuex';
+import DataService from '../services/DataService'
 import * as ApplicationSettings from "application-settings";
 
 Vue.use(Vuex);
@@ -106,11 +107,10 @@ function sortEvents(eventA, eventB) {
 }
 
 const INITIAL_STATE = {
-  animals: {},
-  nextAnimalId: 1,
-  events: {},
-  nextEventId: 1,
+  uid: null,
+  animals: [],
   isLoggedIn: null,
+  dataLoaded: null,
 }
 
 const store = new Vuex.Store({
@@ -118,7 +118,7 @@ const store = new Vuex.Store({
 
   getters: {
     animalsList: state => {
-      return Object.values(state.animals);
+      return state.animals;
     },
 
     getAnimal: (state) => (id) => {
@@ -142,6 +142,10 @@ const store = new Vuex.Store({
   mutations: {
     setIsLoggedIn(state, value) {
       Vue.set(state, 'isLoggedIn', value);
+      if(!value) {
+        Vue.set(state, 'uid', null);
+        Vue.set(state, 'dataLoaded', null);
+      }
     },
 
     load(state) {
@@ -150,6 +154,10 @@ const store = new Vuex.Store({
           Object.assign(state, JSON.parse(ApplicationSettings.getString("store")))
         );
       }
+    },
+
+    loadUserData(state, userData) {
+      this.replaceState(Object.assign(state, userData));
     },
 
     reset(state) {

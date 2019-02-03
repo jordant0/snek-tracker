@@ -1,15 +1,17 @@
 <script>
+  import { mapState } from 'vuex'
+
   export default {
     props: {
       animalId: {
-        type: Number,
-        default: 0,
+        type: String,
+        default: null,
       },
     },
 
     data() {
-      if(!this.animalId) {
-        return {
+      return {
+        animal: {
           name: '',
           birthdate: new Date(),
           species: '',
@@ -17,29 +19,35 @@
           feedingDuration: null,
           lastFed: null,
         }
-      } else {
-        let animal = this.$store.getters.getAnimal(this.animalId),
-            birthdate = animal.birthdate || {},
-            arrival = animal.arrival || {};
+      }
+    },
 
-        return {
-          name: animal.name,
-          birthdate: new Date(birthdate.year, birthdate.month, birthdate.day),
-          species: animal.species,
-          arrival: new Date(arrival.year, arrival.month, arrival.day),
-          feedingDuration: animal.feedingDuration,
-          lastFed: animal.lastFed,
-        }
+    created() {
+      if(this.animalId) {
+        this.$database.getAnimalData(this.uid, this.animalId)
+        .then(doc => {
+          this.animal = doc.data();
+          this.animal.birthdate = new Date(this.animal.birthdate);
+          this.animal.arrival = new Date(this.animal.arrival);
+        })
+        .catch(err => {
+          console.error(err);
+          this.alert(err);
+        });
       }
     },
 
     computed: {
+      ...mapState([
+        'uid',
+      ]),
+
       newAnimal() {
         return !this.animalId;
       },
 
       valid() {
-        return !!this.name;
+        return !!this.animal.name;
       },
 
       buttonText() {
@@ -49,24 +57,27 @@
 
     methods: {
       addAnimal() {
-        let animalData = {
-          name: this.name,
-          birthdate: this.birthdate,
-          species: this.species,
-          arrival: this.arrival,
-          feedingDuration: this.feedingDuration,
-          lastFed: this.lastFed,
-        };
-
         if(this.newAnimal) {
-          this.$store.commit('addAnimal', animalData);
+          this.$database.addAnimal(this.uid, this.animal)
+          .then(documentRef  => {
+            console.log(`Added animal with ID ${documentRef.id}`);
+            this.goBack();
+          })
+          .catch(err => {
+            console.error(err);
+            this.alert(err);
+          });
         }
         else {
-          animalData.id = this.animalId;
-          this.$store.commit('updateAnimal', animalData);
+          this.$database.updateAnimal(this.uid, this.animalId, this.animal)
+          .then(() => {
+            this.goBack();
+          })
+          .catch(err => {
+            console.error(err);
+            this.alert(err);
+          });
         }
-
-        this.goBack();
       },
 
       goBack() {
@@ -90,27 +101,27 @@
         <StackLayout>
           <StackLayout class="form-field" marginBottom="20">
             <Label class="label" text="Name" />
-            <TextField v-model="name" hint="Enter animal's name..." />
+            <TextField v-model="animal.name" hint="Enter animal's name..." />
           </StackLayout>
 
           <StackLayout class="form-field" marginBottom="20">
             <Label class="label" text="Species" />
-            <TextField v-model="species" hint="Enter species name..." />
+            <TextField v-model="animal.species" hint="Enter species name..." />
           </StackLayout>
 
           <StackLayout  class="form-field" marginBottom="20">
             <Label class="label" text="Feeding Duration" />
-            <TextField v-model="feedingDuration" keyboardType="number" hint="Every (x) days" />
+            <TextField v-model="animal.feedingDuration" keyboardType="number" hint="Every (x) days" />
           </StackLayout>
 
           <StackLayout class="form-field">
             <Label class="label" text="Birthdate" />
-            <DatePicker v-model="birthdate" />
+            <DatePicker v-model="animal.birthdate" />
           </StackLayout>
 
           <StackLayout class="form-field">
             <Label class="label" text="Arrival Date" />
-            <DatePicker v-model="arrival" />
+            <DatePicker v-model="animal.arrival" />
           </StackLayout>
         </StackLayout>
       </ScrollView>
