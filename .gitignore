@@ -10,3 +10,4 @@ platforms
 
 *.keystore
 google-services.json
+api-*.json
